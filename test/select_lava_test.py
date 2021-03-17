@@ -1,3 +1,6 @@
+# hier proibiere ich die Möglichkeiten von tkinter für die Projekt-GUI aus
+# zu Beginn eine Visualisierung der Regale mit Auswahlmöglichkeit der Plätze
+
 import tkinter as tk
 
 
