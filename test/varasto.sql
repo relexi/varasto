@@ -17,7 +17,7 @@ CREATE TABLE `paikka` (
   `lyhytnimi` varchar(255),
   `hylly` varchar(255),
   `taso` tinyint,
-  `vaeli` tinyint,
+  `vali` tinyint,
   `lava` tinyint,
   `active` tinyint
 );

@@ -29,3 +29,11 @@ class Tapahtuma(Base):
 class Paikka(Base):
     __tablename__ = "paikka"
     paikka_id = Column(Integer, primary_key=True)
+    lyhytnimi = Column(String)
+    hylly = Column(String)
+    taso = Column(Integer)
+    vali = Column(Integer)
+    lava = Column(Integer)
+    active = Column(Integer)
+
+    valineet = relationship("Valine", backref=backref("paikka_id"))
