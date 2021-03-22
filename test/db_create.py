@@ -17,7 +17,7 @@ def create_connection(db_file):
     return conn
 
 
-conn = create_connection("test\\db\\test13.db")
+conn = create_connection("test\\test14.db")
 crsr = conn.cursor()
 for query in create_string():
     crsr.execute(query)

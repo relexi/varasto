@@ -19,7 +19,7 @@ class Valine(Base):
 
 class Tapahtuma(Base):
     __tablename__ = "tapahtuma"
-    tapaht_id = Column(Integer, primary_key=True)
+    tapaht_id = Column(Integer, primary_key=True, autoincrement=True)
     tta_no = Column(String, ForeignKey("valine.ta_no"))
     tluokka = Column(Integer, ForeignKey("tapahtuma_luokka.tapaht_luokka_id"))
     tpaikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
@@ -44,7 +44,7 @@ class Paikka(Base):
 
 class Luokka(Base):
     __tablename__ = "luokka"
-    luokka_id = Column(Integer, primary_key=True)
+    luokka_id = Column(Integer, primary_key=True, autoincrement=True)
     luokka_nimi = Column(String)
 
     valineet_luokassa = relationship("Valine", backref=backref("valuokka_id"))
@@ -52,7 +52,7 @@ class Luokka(Base):
 
 class Tapahtuma_Luokka(Base):
     __tablename__ = "tapahtuma_luokka"
-    tapaht_luokka_id = Column(Integer, primary_key=True)
+    tapaht_luokka_id = Column(Integer, primary_key=True, autoincrement=True)
     tapaht_kuvaus = Column(String)
 
     tapahtumat_luokassa = relationship("Tapahtuma",

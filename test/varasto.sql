@@ -1,19 +1,19 @@
 CREATE TABLE `valine` (
-  `ta_no` varchar(255) PRIMARY KEY,
-  `luokka_id` int,
+  `ta_no` varchar(255) NOT NULL PRIMARY KEY,
+  `va_luokka_id` INTEGER REFERENCES luokka,
   `valine_nimi` varchar(255),
   `huomautus` varchar(255),
-  `paikka_id` int,
+  `va_paikka_id` INTEGER REFERENCES paikka,
   `active` tinyint
 );
 
 CREATE TABLE `luokka` (
-  `luokka_id` int PRIMARY KEY,
+  `luokka_id` INTEGER NOT NULL PRIMARY KEY,
   `luokka_nimi` varchar(255)
 );
 
 CREATE TABLE `paikka` (
-  `paikka_id` int PRIMARY KEY,
+  `paikka_id` INTEGER NOT NULL PRIMARY KEY,
   `lyhytnimi` varchar(255),
   `hylly` varchar(255),
   `taso` tinyint,
@@ -23,24 +23,14 @@ CREATE TABLE `paikka` (
 );
 
 CREATE TABLE `tapahtuma` (
-  `tapath_id` int PRIMARY KEY,
-  `ta_no` varchar(255),
-  `tluokka` int,
-  `paikka_id` int,
+  `tapaht_id` INTEGER NOT NULL PRIMARY KEY,
+  `ta_ta_no` varchar(255) REFERENCES valine,
+  `ta_luokka` INTEGER REFERENCES tapahtuma_luokka,
+  `ta_paikka_id` INTEGER REFERENCES paikka,
   `tapahtunut` datetime DEFAULT (now())
 );
 
 CREATE TABLE `tapahtuma_luokka` (
-  `tapaht_luokka_id` int PRIMARY KEY,
+  `tapaht_luokka_id` INTEGER NOT NULL PRIMARY KEY,
   `tapaht_kuvaus` varchar(255)
 );
-
-ALTER TABLE `valine` ADD FOREIGN KEY (`luokka_id`) REFERENCES `luokka` (`luokka_id`);
-
-ALTER TABLE `valine` ADD FOREIGN KEY (`paikka_id`) REFERENCES `paikka` (`paikka_id`);
-
-ALTER TABLE `taphtuma` ADD FOREIGN KEY (`ta_no`) REFERENCES `valine` (`ta_no`);
-
-ALTER TABLE `tapahtuma` ADD FOREIGN KEY (`paikka_id`) REFERENCES `paikka` (`paikka_id`);
-
-ALTER TABLE `tapahtuma` ADD FOREIGN KEY (`tluokka`) REFERENCES `tapahtuma_luokka` (`tapaht_luokka_id`);
