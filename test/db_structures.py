@@ -11,24 +11,24 @@ class Valine(Base):
     luokka_id = Column(Integer, ForeignKey("luokka.luokka_id"))
     valine_nimi = Column(String)
     huomautus = Column(String)
-    paikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
+    vpaikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
     active = Column(Integer)
 
-    tapahtumat = relationship("Tapahtuma", backref=backref("ta_no"))
+    tapahtumat = relationship("Tapahtuma", backref=backref("tata_no"))
 
 
 class Tapahtuma(Base):
     __tablename__ = "tapahtuma"
     tapaht_id = Column(Integer, primary_key=True)
-    ta_no = Column(String, ForeignKey("valine.ta_no"))
+    tta_no = Column(String, ForeignKey("valine.ta_no"))
     tluokka = Column(Integer, ForeignKey("tapahtuma_luokka.tapaht_luokka_id"))
-    paikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
+    tpaikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
     tapahtunut = Column(DateTime)
 
 
 class Paikka(Base):
     __tablename__ = "paikka"
-    paikka_id = Column(Integer, primary_key=True)
+    paikka_id = Column(Integer, primary_key=True, autoincrement=True)
     lyhytnimi = Column(String)
     hylly = Column(String)
     taso = Column(Integer)
@@ -36,10 +36,10 @@ class Paikka(Base):
     lava = Column(Integer)
     active = Column(Integer)
 
-    valineet = relationship("Valine", backref=backref("paikka_id"))
+    valineet = relationship("Valine", backref=backref("valpaikka_id"))
     tapahtumat_paikalla = relationship(
                             "Tapahtuma",
-                            backref=backref("paikka_id"))
+                            backref=backref("tapaikka_id"))
 
 
 class Luokka(Base):
@@ -47,7 +47,7 @@ class Luokka(Base):
     luokka_id = Column(Integer, primary_key=True)
     luokka_nimi = Column(String)
 
-    valineet_luokassa = relationship("Valine", backref=backref("luokka_id"))
+    valineet_luokassa = relationship("Valine", backref=backref("valuokka_id"))
 
 
 class Tapahtuma_Luokka(Base):
@@ -55,4 +55,5 @@ class Tapahtuma_Luokka(Base):
     tapaht_luokka_id = Column(Integer, primary_key=True)
     tapaht_kuvaus = Column(String)
 
-    tapahtumat_luokassa = relationship("Tapahtuma", backref=backref("tluokka"))
+    tapahtumat_luokassa = relationship("Tapahtuma",
+                                       backref=backref("taluokka"))
