@@ -1,8 +1,8 @@
-from importlib import resources
+
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 
 """
@@ -14,12 +14,13 @@ Base = declarative_base()
 
 
 # Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test3.db', echo=False)
+engine = create_engine('sqlite:///test/test3.db', echo=False)
 Session = sessionmaker()
 Session.configure(bind=engine)
 
 session = Session()
 Base = declarative_base()
+
 
 class Paikka(Base):
     __tablename__ = 'paikka'

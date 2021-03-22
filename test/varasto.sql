@@ -22,7 +22,7 @@ CREATE TABLE `paikka` (
   `active` tinyint
 );
 
-CREATE TABLE `taphtuma` (
+CREATE TABLE `tapahtuma` (
   `tapath_id` int PRIMARY KEY,
   `ta_no` varchar(255),
   `tluokka` int,
@@ -41,6 +41,6 @@ ALTER TABLE `valine` ADD FOREIGN KEY (`paikka_id`) REFERENCES `paikka` (`paikka_
 
 ALTER TABLE `taphtuma` ADD FOREIGN KEY (`ta_no`) REFERENCES `valine` (`ta_no`);
 
-ALTER TABLE `taphtuma` ADD FOREIGN KEY (`paikka_id`) REFERENCES `paikka` (`paikka_id`);
+ALTER TABLE `tapahtuma` ADD FOREIGN KEY (`paikka_id`) REFERENCES `paikka` (`paikka_id`);
 
-ALTER TABLE `taphtuma` ADD FOREIGN KEY (`tluokka`) REFERENCES `tapahtuma_luokka` (`tapaht_luokka_id`);
+ALTER TABLE `tapahtuma` ADD FOREIGN KEY (`tluokka`) REFERENCES `tapahtuma_luokka` (`tapaht_luokka_id`);
