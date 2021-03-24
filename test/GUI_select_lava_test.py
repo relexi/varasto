@@ -5,7 +5,7 @@ import tkinter as tk
 
 
 def select_lava(pos):
-    # selected = hylly + taso + vali + lava
+    # selected = hylly + vali + taso + lava
     print(pos)
 
 
@@ -18,14 +18,14 @@ def nayta_hylly(hylly):
 
     """
     # Hylly parametrit
-    hyllyt = {"A": [5, 3, [3, 3, 4]],
+    hyllyt = {"A": [3, 5, [3, 3, 4]],
               "B": [3, 3, [3, 3, 3]],
               "C": [3, 3, [3, 3, 3]],
               "D": [3, 3, [3, 3, 3]],
-              "E": [4, 2, [4, 4]]}
+              "E": [2, 4, [4, 4]]}
 
-    tasot = hyllyt[hylly][0]
-    valit = hyllyt[hylly][1]
+    valit = hyllyt[hylly][0]
+    tasot = hyllyt[hylly][1]
     lavat = hyllyt[hylly][2]
 
     window_title = f"hylly {hylly}"
@@ -51,13 +51,13 @@ def nayta_hylly(hylly):
                 )
                 frame.grid(row=t, column=lava, padx=5, pady=5)
                 label = tk.Label(master=frame,
-                                 text=f"taso {taso}\nväli {vali}\nlava {lava}")
+                                 text=f"väli {vali}\ntaso {taso}\nlava {lava}")
                 label.pack()
                 label.bind("<Button-1>", lambda e,
-                           pos=hylly+str(taso)+str(vali)+str(lava):
+                           pos=hylly+str(vali)+str(taso)+str(lava):
                            select_lava(pos))
 
     window.mainloop()
 
 
-nayta_hylly("A")
+nayta_hylly("B")
