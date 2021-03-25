@@ -7,7 +7,7 @@ from create_module import luo_db_luokat, luo_db_tapahtumaluokat
 
 # define parameters for the new db
 
-str_db_file = "test31.db"
+str_db_file = "test33.db"
 
 hyllyt = {
     "A": [3, 5, [3, 3, 4]],

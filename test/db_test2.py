@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from db_structures import Paikka, Valine, Luokka
 
 # Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test//db//test31.db', echo=False)
+engine = create_engine('sqlite:///test//db//test33.db', echo=False)
 Session = sessionmaker()
 Session.configure(bind=engine)
 
@@ -60,16 +60,22 @@ def uusi_valine(session, ta_no, luokka_no, valine_nimi, paikka_lyhyt):
 
 
 def valine_paikalla(session, paikka_lyhyt):
-    valineet = (
-        session.query(Valine)
+    paikka = (
+        session.query(Paikka)
         .filter(Paikka.lyhytnimi == paikka_lyhyt)
-        .all()
+        .one_or_none()
     )
+    for valine in paikka.valineet:
+        print(valine.ta_no, valine.va_luokka_id, valine.valine_nimi)
 
-    for valine in valineet:
-        print(valine.ta_no, valine.va_paikka_id)
 
+"""
 
-# v = uusi_valine(session, "TA181210255", "181210", "Modux480 vanha", "A000")
+v = uusi_valine(session, "TA181210510", "181210", "Modux480 uusi", "A000")
+v = uusi_valine(session, "TA181210210", "181210", "Modux480 vanha", "A001")
+v = uusi_valine(session, "TA181210555", "181210", "Modux480 uusi", "A001")
+v = uusi_valine(session, "20184711", "181210", "Modux480 uusi", "A002")
+
+"""
 valine_paikalla(session, "A002")
 session.commit()

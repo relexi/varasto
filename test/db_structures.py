@@ -38,10 +38,10 @@ class Paikka(Base):
     lava = Column(Integer)
     active = Column(Integer)
 
-    valineet = relationship("Valine", backref=backref("valpaikka_id"))
+    valineet = relationship("Valine", backref=backref("paikka"))
     tapahtumat_paikalla = relationship(
                             "Tapahtuma",
-                            backref=backref("tapaikka_id"))
+                            backref=backref("tapahtuma"))
 
 
 class Luokka(Base):
@@ -49,7 +49,7 @@ class Luokka(Base):
     luokka_id = Column(String, primary_key=True)
     luokka_nimi = Column(String)
 
-    valineet_luokassa = relationship("Valine", backref=backref("valuokka_id"))
+    valineet_luokassa = relationship("Valine", backref=backref("luokka"))
 
 
 class Tapahtuma_Luokka(Base):
@@ -58,4 +58,4 @@ class Tapahtuma_Luokka(Base):
     tapaht_kuvaus = Column(String)
 
     tapahtumat_luokassa = relationship("Tapahtuma",
-                                       backref=backref("taluokka"))
+                                       backref=backref("luokka"))
