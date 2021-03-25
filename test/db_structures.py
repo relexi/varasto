@@ -10,21 +10,22 @@ Base = declarative_base()
 class Valine(Base):
     __tablename__ = "valine"
     ta_no = Column(String, primary_key=True)
-    va_luokka_id = Column(Integer, ForeignKey("luokka.luokka_id"))
-    valine_nimi = Column(String)
+    luokka_id = Column(Integer, ForeignKey("luokka.luokka_id"))
+    nimi = Column(String)
     huomautus = Column(String)
-    va_paikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
+    paikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
     active = Column(Integer)
 
-    tapahtumat = relationship("Tapahtuma", backref=backref("tata_no"))
+    tapahtumat = relationship("Tapahtuma", backref=backref("valine"))
 
 
 class Tapahtuma(Base):
     __tablename__ = "tapahtuma"
     tapaht_id = Column(Integer, primary_key=True, autoincrement=True)
-    tta_no = Column(String, ForeignKey("valine.ta_no"))
-    tluokka = Column(Integer, ForeignKey("tapahtuma_luokka.tapaht_luokka_id"))
-    tpaikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
+    ta_no = Column(String, ForeignKey("valine.ta_no"))
+    tapaht_luokka = Column(Integer,
+                           ForeignKey("tapahtuma_luokka.tapaht_luokka_id"))
+    paikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
     tapahtunut = Column(DateTime)
 
 
@@ -41,7 +42,7 @@ class Paikka(Base):
     valineet = relationship("Valine", backref=backref("paikka"))
     tapahtumat_paikalla = relationship(
                             "Tapahtuma",
-                            backref=backref("tapahtuma"))
+                            backref=backref("paikka"))
 
 
 class Luokka(Base):

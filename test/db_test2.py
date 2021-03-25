@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from db_structures import Paikka, Valine, Luokka
 
 # Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test//db//test33.db', echo=False)
+engine = create_engine('sqlite:///test//db//test37.db', echo=False)
 Session = sessionmaker()
 Session.configure(bind=engine)
 
@@ -23,7 +23,7 @@ def uusi_valine(session, ta_no, luokka_no, valine_nimi, paikka_lyhyt):
     if valine is not None:
         return
     else:
-        valine = Valine(ta_no=ta_no, valine_nimi=valine_nimi)
+        valine = Valine(ta_no=ta_no, nimi=valine_nimi)
 
     # etsi paikka lyhytnimestä
     paikka = (
@@ -66,16 +66,29 @@ def valine_paikalla(session, paikka_lyhyt):
         .one_or_none()
     )
     for valine in paikka.valineet:
-        print(valine.ta_no, valine.va_luokka_id, valine.valine_nimi)
+        print(valine.ta_no, valine.luokka_id, valine.nimi)
 
 
-"""
+def etsi_valine(session, ta_no):
+    valine = (
+        session.query(Valine)
+        .filter(ta_no == Valine.ta_no)
+        .one_or_none()
+    )
+    print(valine.paikka.lyhytnimi)
 
-v = uusi_valine(session, "TA181210510", "181210", "Modux480 uusi", "A000")
+
+v = uusi_valine(session, "TA181210222", "181210", "Modux480 vanha", "A000")
 v = uusi_valine(session, "TA181210210", "181210", "Modux480 vanha", "A001")
 v = uusi_valine(session, "TA181210555", "181210", "Modux480 uusi", "A001")
 v = uusi_valine(session, "20184711", "181210", "Modux480 uusi", "A002")
+v = uusi_valine(session, "TA043306789", "043306",
+                         "Carital Optima EZ 90", "A010")
+v = uusi_valine(session, "2100900", "043306", "Carital Optima 80 uusi", "A010")
+v = uusi_valine(session, "TA043306666", "043306", "Quattro +3T 76", "A011")
+v = uusi_valine(session, "TA043306700", "043306",
+                         "Carital Optima EZ 80", "A012")
 
-"""
-valine_paikalla(session, "A002")
+valine_paikalla(session, "A001")
+etsi_valine(session, "TA181210555")
 session.commit()
