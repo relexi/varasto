@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_structures import Paikka, Luokka
+from db_structures import Paikka, Luokka, Tapahtuma_Luokka
 
 
 def luo_db_file(str_db_file):
@@ -101,4 +101,22 @@ def luo_db_luokat(str_db_file, luokat):
         else:
             luokka = Luokka(luokka_id=no, luokka_nimi=nimi)
             session.add(luokka)
+    session.commit()
+
+
+def luo_db_tapahtumaluokat(str_db_file, tapahtumat):
+    # connect to the database through SQLAlchemy
+    engine = create_engine(f'sqlite:///test//db//{str_db_file}', echo=False)
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+
+    for luokka in tapahtumat:
+        onko = session.query(Tapahtuma_Luokka.tapaht_kuvaus)\
+               .filter(Tapahtuma_Luokka.tapaht_kuvaus == luokka).all()
+        if onko != []:
+            print(luokka + " on jo olemassa")
+        else:
+            tapahtumaluokka = Tapahtuma_Luokka(tapaht_kuvaus=luokka)
+            session.add(tapahtumaluokka)
     session.commit()

@@ -60,4 +60,4 @@ def nayta_hylly(hylly):
     window.mainloop()
 
 
-nayta_hylly("B")
+nayta_hylly("A")
