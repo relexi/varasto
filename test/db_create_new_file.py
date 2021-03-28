@@ -7,7 +7,9 @@ from create_module import luo_db_luokat, luo_db_tapahtumaluokat
 
 # define parameters for the new db
 
-str_db_file = "test37.db"
+str_db_file = "test41.db"
+str_db_version_info = "introduced table meta for db with version\
+                        and version_info"
 
 hyllyt = {
     "A": [3, 5, [3, 3, 4]],
@@ -38,9 +40,9 @@ tapahtumaluokat = [
 ]
 
 # call functions from create_module to create first the
-# database and then fill it with the tables given above
+# database and then fill it with the table-data given above
 
-luo_db_file(str_db_file)
+luo_db_file(str_db_file, str_db_version_info)
 luo_db_paikat(str_db_file, hyllyt)
 luo_db_luokat(str_db_file, luokat)
 luo_db_tapahtumaluokat(str_db_file, tapahtumaluokat)

@@ -7,6 +7,12 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
+class Meta(Base):
+    __tablename__ = "meta"
+    version = Column(Integer, primary_key=True, autoincrement=True)
+    version_info = Column(String)
+
+
 class Valine(Base):
     __tablename__ = "valine"
     ta_no = Column(String, primary_key=True)

@@ -1,13 +1,18 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_structures import Paikka, Luokka, Tapahtuma_Luokka
+from db_structures import Paikka, Luokka, Tapahtuma_Luokka, Meta
 
 
-def luo_db_file(str_db_file):
+def luo_db_file(str_db_file, version_info):
     import sqlite3
     from sqlite3 import Error
     # the SQL-queries that create the db-structure
-    create_string = ["""CREATE TABLE `valine` (
+    create_string = ["""CREATE TABLE `meta` (
+    `version` INTEGER NOT NULL PRIMARY KEY,
+    `version_info` varchar(255)
+    );
+    """, """
+    CREATE TABLE `valine` (
     `ta_no` varchar(255) NOT NULL PRIMARY KEY,
     `luokka_id` varchar(255) REFERENCES luokka,
     `nimi` varchar(255),
@@ -54,6 +59,17 @@ def luo_db_file(str_db_file):
     # execute sql-queries one after another
     for query in create_string:
         crsr.execute(query)
+
+    # connect to the database through SQLAlchemy
+    engine = create_engine(f'sqlite:///test//db//{str_db_file}', echo=False)
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+
+    # write meta-info into new db
+    meta = Meta(version_info=version_info)
+    session.add(meta)
+    session.commit()
 
 
 def luo_db_paikat(str_db_file, hyllyt):
