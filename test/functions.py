@@ -19,9 +19,8 @@ def varastoi_valine(session, valine_ta_no, paikka_lyhyt, varasto_info):
     # etsi paikka lyhytnimestä
     valine = etsi_valine(session, valine_ta_no)
     if valine is None:
+        print(f"väline {valine.ta_no} ei löytynyt")
         return
-    else:
-        print(f"väline {valine.ta_no} löytyi")
 
     paikka = (
         session.query(Paikka)
@@ -29,12 +28,14 @@ def varastoi_valine(session, valine_ta_no, paikka_lyhyt, varasto_info):
         .one_or_none()
         )
     if paikka is None:
+        print(f"paikka {paikka.lyhytnimi} ei ole olemassa \
+        - väline {valine.ta_no} ei varastoitu")
         return
     else:
-        print(f"paikka {paikka.lyhytnimi} löytyy \
-            - väline {valine.ta_no} varastoitu")
         # do not allow to store the same valine again
         if valine in paikka.valineet:
+            print(f"väline {valine.ta_no} on jo varastoitu \
+                paikalle {paikka.lyhytnimi}")
             return
         else:
             paikka.valineet.append(valine)
@@ -76,14 +77,17 @@ def uusi_valine(session, ta_no, luokka_no, valine_nimi):
     valine.tapahtumat.append(tapa)
     tapa_luokka.tapahtumat_luokassa.append(tapa)
 
+    # add valine and additional info to this tapahtuma and
+    # add it to the db
     tapa.valine = valine
     tapa.tapaht_kuvaus = "Väline luotu"
     session.add(tapa)
 
-    # assign properties to object and store it to the db
+    # assign properties to valine-object and store it to the db
     valine.luokka = luokka
     valine.active = 0  # intitially valine is not active
     session.add(valine)
+    session.commit()
     return valine
 
 
@@ -125,4 +129,6 @@ v = varastoi_valine(session, "TA043306666", "E010", "vain siksi")
 valine_paikalla(session, "E010")
 v = etsi_valine(session, "2100900")
 print(v.paikka.lyhytnimi)
+for vt in v.tapahtumat:
+    print(vt.ta_no, vt.tapaht_kuvaus, vt.tapahtunut)
 session.commit()
