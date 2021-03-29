@@ -32,6 +32,7 @@ class Tapahtuma(Base):
     tapaht_luokka = Column(Integer,
                            ForeignKey("tapahtuma_luokka.tapaht_luokka_id"))
     paikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))
+    tapaht_kuvaus = Column(String)
     tapahtunut = Column(DateTime)
 
 

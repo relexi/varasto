@@ -1,10 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from db_structures import Paikka, Valine, Luokka
+from db_structures import Paikka, Valine, Luokka, Tapahtuma, Tapahtuma_Luokka
+from datetime import datetime
+
 
 # Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test//db//test41.db', echo=False)
+engine = create_engine('sqlite:///test//db//test44.db', echo=False)
 Session = sessionmaker()
 Session.configure(bind=engine)
 
@@ -44,6 +46,7 @@ def uusi_valine(session, ta_no, luokka_no, valine_nimi):
     # onko valine olemassa?
     valine = etsi_valine(session, ta_no)
     if valine is not None:
+        print(f"Väline {ta_no} on jo olemassa - ei luotu")
         return
     else:
         valine = Valine(ta_no=ta_no, nimi=valine_nimi)
@@ -55,15 +58,31 @@ def uusi_valine(session, ta_no, luokka_no, valine_nimi):
         .one_or_none()
     )
     if luokka is None:
+        print(f"Luokka {luokka_no} ei löytynyt")
         return
     else:
-        print(f"luokka {luokka_no} löytyy")
         luokka.valineet_luokassa.append(valine)
+
+    # write new tapahtuma into db for creation of valine
+    # first create a new tapahtuma
+    tapa = Tapahtuma(tapahtunut=datetime.now())
+    # search for the correspondung tapahtuma_luokka
+    tapa_luokka = (
+        session.query(Tapahtuma_Luokka)
+        .filter(Tapahtuma_Luokka.tapaht_kuvaus == "uusi")
+        .one_or_none()
+    )
+    # create cross-references from tables valine and tapahtuma_luokka
+    valine.tapahtumat.append(tapa)
+    tapa_luokka.tapahtumat_luokassa.append(tapa)
+
+    tapa.valine = valine
+    tapa.tapaht_kuvaus = "Väline luotu"
+    session.add(tapa)
 
     # assign properties to object and store it to the db
     valine.luokka = luokka
     valine.active = 0  # intitially valine is not active
-    print("uusi väline luotu: ", valine.ta_no)
     session.add(valine)
     return valine
 

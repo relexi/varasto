@@ -7,7 +7,7 @@ from create_module import luo_db_luokat, luo_db_tapahtumaluokat
 
 # define parameters for the new db
 
-str_db_file = "test41.db"
+str_db_file = "test44.db"
 str_db_version_info = "introduced table meta for db with version\
                         and version_info"
 
@@ -36,7 +36,8 @@ luokat = {
 tapahtumaluokat = [
     "sisään",
     "ulos",
-    "siirto"
+    "siirto",
+    "uusi"
 ]
 
 # call functions from create_module to create first the

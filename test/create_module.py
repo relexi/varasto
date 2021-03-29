@@ -39,8 +39,9 @@ def luo_db_file(str_db_file, version_info):
     CREATE TABLE `tapahtuma` (
     `tapaht_id` INTEGER NOT NULL PRIMARY KEY,
     `ta_no` varchar(255) REFERENCES valine,
-    `luokka` INTEGER REFERENCES tapahtuma_luokka,
+    `tapaht_luokka` INTEGER REFERENCES tapahtuma_luokka,
     `paikka_id` INTEGER REFERENCES paikka,
+    `tapaht_kuvaus` varchar(255),
     `tapahtunut` datetime DEFAULT (now())
     );
     """, """
