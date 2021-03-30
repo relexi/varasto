@@ -6,13 +6,37 @@ from datetime import datetime
 
 
 # Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test//db//test44.db', echo=False)
+engine = create_engine('sqlite:///test//db//test46.db', echo=False)
 Session = sessionmaker()
 Session.configure(bind=engine)
 
 session = Session()
 Base = declarative_base()
 Base.metadata.create_all(engine)
+
+
+def nyt_tapahtuu(session, valine, paikka, luokka, kuvaus):
+    # first create a new tapahtuma
+    tapa = Tapahtuma(tapahtunut=datetime.now())
+    # search for the correspondung tapahtuma_luokka
+    tapa_luokka = (
+        session.query(Tapahtuma_Luokka)
+        .filter(Tapahtuma_Luokka.tapaht_kuvaus == luokka)
+        .one_or_none()
+    )
+    if tapa_luokka is None:
+        return
+    # create cross-references from tables valine and tapahtuma_luokka
+    valine.tapahtumat.append(tapa)
+    tapa_luokka.tapahtumat_luokassa.append(tapa)
+
+    # add valine and additional info to this tapahtuma and
+    # add it to the db
+    tapa.paikka = paikka
+    tapa.valine = valine
+    tapa.tapaht_kuvaus = kuvaus
+    session.add(tapa)
+    return tapa
 
 
 def varastoi_valine(session, valine_ta_no, paikka_lyhyt, varasto_info):
@@ -22,11 +46,7 @@ def varastoi_valine(session, valine_ta_no, paikka_lyhyt, varasto_info):
         print(f"väline {valine.ta_no} ei löytynyt")
         return
 
-    paikka = (
-        session.query(Paikka)
-        .filter(Paikka.lyhytnimi == paikka_lyhyt)
-        .one_or_none()
-        )
+    paikka = etsi_paikka(session, paikka_lyhyt)
     if paikka is None:
         print(f"paikka {paikka.lyhytnimi} ei ole olemassa \
         - väline {valine.ta_no} ei varastoitu")
@@ -40,7 +60,19 @@ def varastoi_valine(session, valine_ta_no, paikka_lyhyt, varasto_info):
         else:
             paikka.valineet.append(valine)
             valine.active = 1
+            nyt_tapahtuu(session, valine, paikka, "sisään", varasto_info)
     return valine
+
+
+def varastosta_valine(session, valine_ta_no, varasto_info):
+    # etsi paikka lyhytnimestä
+    valine = etsi_valine(session, valine_ta_no)
+    if valine is None:
+        print(f"väline {valine.ta_no} ei löytynyt")
+        return
+    paikka = valine.paikka
+    paikka.valineet.remove(valine)
+    valine.active = 0
 
 
 def uusi_valine(session, ta_no, luokka_no, valine_nimi):
@@ -65,23 +97,7 @@ def uusi_valine(session, ta_no, luokka_no, valine_nimi):
         luokka.valineet_luokassa.append(valine)
 
     # write new tapahtuma into db for creation of valine
-    # first create a new tapahtuma
-    tapa = Tapahtuma(tapahtunut=datetime.now())
-    # search for the correspondung tapahtuma_luokka
-    tapa_luokka = (
-        session.query(Tapahtuma_Luokka)
-        .filter(Tapahtuma_Luokka.tapaht_kuvaus == "uusi")
-        .one_or_none()
-    )
-    # create cross-references from tables valine and tapahtuma_luokka
-    valine.tapahtumat.append(tapa)
-    tapa_luokka.tapahtumat_luokassa.append(tapa)
-
-    # add valine and additional info to this tapahtuma and
-    # add it to the db
-    tapa.valine = valine
-    tapa.tapaht_kuvaus = "Väline luotu"
-    session.add(tapa)
+    nyt_tapahtuu(session, valine, None, "uusi", "Väline luotu")
 
     # assign properties to valine-object and store it to the db
     valine.luokka = luokka
@@ -104,12 +120,22 @@ def valine_paikalla(session, paikka_lyhyt):
 def etsi_valine(session, ta_no):
     valine = (
         session.query(Valine)
-        .filter(ta_no == Valine.ta_no)
+        .filter(Valine.ta_no == ta_no)
         .one_or_none()
     )
     return valine
 
 
+def etsi_paikka(session, paikka_lyhyt):
+    paikka = (
+        session.query(Paikka)
+        .filter(Paikka.lyhytnimi == paikka_lyhyt)
+        .one_or_none()
+    )
+    return paikka
+
+
+"""
 v = uusi_valine(session, "TA181210222", "181210", "Modux480 vanha")
 v = uusi_valine(session, "TA181210210", "181210", "Modux480 vanha")
 v = uusi_valine(session, "TA181210555", "181210", "Modux480 uusi")
@@ -131,4 +157,10 @@ v = etsi_valine(session, "2100900")
 print(v.paikka.lyhytnimi)
 for vt in v.tapahtumat:
     print(vt.ta_no, vt.tapaht_kuvaus, vt.tapahtunut)
+
+vkaks = etsi_valine(session, "2100900")
+paikka = etsi_paikka(session, "B111")
+vkaks.varastosta()
+"""
+varastosta_valine(session, "TA043306666", "poistoon")
 session.commit()
