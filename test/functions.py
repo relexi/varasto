@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 # Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test//db//test46.db', echo=False)
+engine = create_engine('sqlite:///test//db//test47.db', echo=False)
 Session = sessionmaker()
 Session.configure(bind=engine)
 
@@ -71,7 +71,11 @@ def varastosta_valine(session, valine_ta_no, varasto_info):
         print(f"väline {valine.ta_no} ei löytynyt")
         return
     paikka = valine.paikka
+    # log this event
+    nyt_tapahtuu(session, valine, paikka, "ulos", varasto_info)
+    # remove valine from paikka
     paikka.valineet.remove(valine)
+    # and set it inactive
     valine.active = 0
 
 
@@ -135,8 +139,7 @@ def etsi_paikka(session, paikka_lyhyt):
     return paikka
 
 
-"""
-v = uusi_valine(session, "TA181210222", "181210", "Modux480 vanha")
+"""v = uusi_valine(session, "TA181210222", "181210", "Modux480 vanha")
 v = uusi_valine(session, "TA181210210", "181210", "Modux480 vanha")
 v = uusi_valine(session, "TA181210555", "181210", "Modux480 uusi")
 v = uusi_valine(session, "20184711", "181210", "Modux480 uusi")
@@ -151,16 +154,18 @@ v = varastoi_valine(session, "TA181210555", "A001", "no niin")
 v = varastoi_valine(session, "20184711", "A002", "jotain")
 v = varastoi_valine(session, "2100900", "E010", "jotain muuta")
 v = varastoi_valine(session, "TA043306666", "E010", "vain siksi")
-
+"""
 valine_paikalla(session, "E010")
-v = etsi_valine(session, "2100900")
-print(v.paikka.lyhytnimi)
+v = etsi_valine(session, "TA181210222")
 for vt in v.tapahtumat:
-    print(vt.ta_no, vt.tapaht_kuvaus, vt.tapahtunut)
+    print(vt.ta_no, vt.luokka.tapaht_kuvaus,
+          vt.tapaht_kuvaus, vt.tapahtunut)
 
-vkaks = etsi_valine(session, "2100900")
+"""vkaks = etsi_valine(session, "2100900")
 paikka = etsi_paikka(session, "B111")
 vkaks.varastosta()
 """
-varastosta_valine(session, "TA043306666", "poistoon")
+
+# v = varastoi_valine(session, "TA043306666", "E010", "vain uudestaan")
+# varastosta_valine(session, "TA181210222", "poistoon")
 session.commit()
