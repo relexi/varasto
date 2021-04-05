@@ -43,13 +43,10 @@ def varastoi_valine(session, valine_ta_no, paikka_lyhyt, varasto_info):
     # etsi paikka lyhytnimestä
     valine = etsi_valine(session, valine_ta_no)
     if valine is None:
-        print(f"väline {valine.ta_no} ei löytynyt")
         return
 
     paikka = etsi_paikka(session, paikka_lyhyt)
     if paikka is None:
-        print(f"paikka {paikka.lyhytnimi} ei ole olemassa \
-        - väline {valine.ta_no} ei varastoitu")
         return
     else:
         # do not allow to store the same valine again
@@ -68,15 +65,15 @@ def varastosta_valine(session, valine_ta_no, varasto_info):
     # etsi paikka lyhytnimestä
     valine = etsi_valine(session, valine_ta_no)
     if valine is None:
-        print(f"väline {valine.ta_no} ei löytynyt")
         return
-    paikka = valine.paikka
     # log this event
-    nyt_tapahtuu(session, valine, paikka, "ulos", varasto_info)
+    nyt_tapahtuu(session, valine, valine.paikka, "ulos", varasto_info)
     # remove valine from paikka
-    paikka.valineet.remove(valine)
+    valine.paikka.valineet.remove(valine)
     # and set it inactive
     valine.active = 0
+    session.commit
+    return valine
 
 
 def uusi_valine(session, ta_no, luokka_no, valine_nimi):
@@ -112,13 +109,8 @@ def uusi_valine(session, ta_no, luokka_no, valine_nimi):
 
 
 def valine_paikalla(session, paikka_lyhyt):
-    paikka = (
-        session.query(Paikka)
-        .filter(Paikka.lyhytnimi == paikka_lyhyt)
-        .one_or_none()
-    )
-    for valine in paikka.valineet:
-        print(valine.ta_no, valine.luokka_id, valine.nimi)
+    paikka = etsi_paikka(session, paikka_lyhyt)
+    return paikka.valineet
 
 
 def etsi_valine(session, ta_no):
@@ -155,7 +147,7 @@ v = varastoi_valine(session, "20184711", "A002", "jotain")
 v = varastoi_valine(session, "2100900", "E010", "jotain muuta")
 v = varastoi_valine(session, "TA043306666", "E010", "vain siksi")
 """
-valine_paikalla(session, "E010")
+
 v = etsi_valine(session, "TA181210222")
 for vt in v.tapahtumat:
     print(vt.ta_no, vt.luokka.tapaht_kuvaus,
