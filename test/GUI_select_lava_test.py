@@ -40,12 +40,22 @@ def select_lava(pos):
 
 def next_hylly():
     # get the actual "hylly" from the label set earlier
-    hylly_idx = abs(65-ord(lbl_actv["text"]))
+    hylly_idx = abs(65-ord(lbl_actv["text"][6]))
     hylly_idx += 1
     if hylly_idx == len(hylly_valinta):
         hylly_idx = 0
     hylly = hylly_valinta[hylly_idx]
-    lbl_actv["text"] = hylly
+    lbl_actv["text"] = "hylly "+hylly
+    nayta_hylly(hylly)
+
+
+def prev_hylly():
+    hylly_idx = abs(65-ord(lbl_actv["text"][6]))
+    hylly_idx -= 1
+    if hylly_idx < 0:
+        hylly_idx = len(hylly_valinta)-1
+    hylly = hylly_valinta[hylly_idx]
+    lbl_actv["text"] = "hylly "+hylly
     nayta_hylly(hylly)
 
 
@@ -66,19 +76,21 @@ def displ_nix(e):
         label.destroy()
 
 
+def uusi_valine():
+    pass
+
+
 def nayta_hylly(hylly):
     tasot = hyllyt[hylly][0]
     valit = hyllyt[hylly][1]
     lavat = hyllyt[hylly][2]
 
-    window_title = f"hylly {hylly}"
-    window.title(window_title)
-    # in case there is alread something: erase it
+    # erase old content first
     widget_list = frm_hylly.winfo_children()
     for i in range(len(widget_list)):
         child = widget_list[i]
         child.destroy()
-
+    # then build the shelfs
     for vali in range(valit):
         framek = tk.Frame(
             master=frm_hylly,
@@ -86,7 +98,7 @@ def nayta_hylly(hylly):
             padx=20, pady=20,
             borderwidth=2
         )
-        framek.grid(row=1, column=vali)
+        framek.grid(row=1, column=vali, sticky="s")
 
         for t in range(tasot):
             taso = tasot-t-1
@@ -111,26 +123,34 @@ def nayta_hylly(hylly):
 
 
 window = tk.Tk()
-window.columnconfigure(0, minsize=500)
-window.rowconfigure([0, 1], minsize=100)
-frm_menu = tk.Frame(master=window)
-frm_menu.columnconfigure([0, 1, 2], minsize=200)
-frm_hylly = tk.Frame(master=window)
-frm_select = tk.Frame(master=frm_menu, bg="blue")
-frm_info = tk.Frame(master=frm_menu)
-frm_selected = tk.Frame(master=frm_menu, bg="green")
+window.title("varasto")
+window.rowconfigure(0, minsize=700, weight=1)
+window.rowconfigure(1, minsize=200, weight=1)
+window.columnconfigure(1, minsize=800, weight=1)
 
-frm_menu.grid(row=0, column=0)
-frm_hylly.grid(row=1, column=0)
-frm_info.grid(row=0, column=1)
-frm_select.grid(row=0, column=0, sticky="w")
-frm_selected.grid(row=0, column=2, sticky="e")
+frm_menu = tk.Frame(window, relief=tk.RAISED, bd=2)
+frm_menu.columnconfigure(1, minsize=100, weight=1)
+frm_oikea = tk.Frame(window)
+frm_oikea.rowconfigure(0, minsize=500, weight=1)
+frm_oikea.rowconfigure(1, minsize=200, weight=1)
 
-btn_fwd = tk.Button(master=frm_select, text=">", command=next_hylly)
-lbl_actv = tk.Label(master=frm_selected, text=active_hylly)
+frm_info = tk.Frame(frm_oikea, relief=tk.RAISED, bd=2)
+frm_hylly = tk.Frame(frm_oikea, relief=tk.RAISED, bd=2)
 
-lbl_actv.grid(row=0, column=0)
-btn_fwd.grid(row=0, column=0)
+btn_fwd = tk.Button(frm_menu, text=">", command=next_hylly)
+btn_ret = tk.Button(frm_menu, text="<", command=prev_hylly)
+lbl_actv = tk.Label(frm_menu, text="hylly "+active_hylly)
+btn_uusi_v = tk.Button(frm_menu, text="uusi väline", command=uusi_valine)
+
+lbl_actv.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+btn_ret.grid(row=0, column=0, sticky="w", padx=5)
+btn_fwd.grid(row=0, column=2, sticky="e", padx=5)
+btn_uusi_v.grid(row=1, column=0, columnspan=3, sticky="ew", padx=5)
+
+frm_menu.grid(row=0, column=0, sticky="ns")
+frm_oikea.grid(row=0, column=1, sticky="ns")
+frm_hylly.grid(row=0, column=0, sticky="ns")
+frm_info.grid(row=1, column=0, sticky="nsew")
 
 nayta_hylly(active_hylly)
 
