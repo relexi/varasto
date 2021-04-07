@@ -4,28 +4,46 @@ zu Beginn eine Visualisierung der Regale mit Auswahlmöglichkeit der Plätze
 """
 
 import tkinter as tk
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+# from sqlalchemy import create_engine
+# from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.orm import sessionmaker
 from functions import etsi_paikka, valine_paikalla
+import functions
 
-# Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test//db//test48.db', echo=False)
+# read configuration from ini-file
+# and use its functions
+cfg = functions.Config('test//varasto_cfg.ini')
+session = cfg.session
+
+"""db_file = config.get('db', 'db_file')
+str_hylly_nimet = config.get('varasto', 'hyllyt')
+hylly_nimet = str_hylly_nimet.split(", ")
+# build the hyllyt-dictionary
+hyllyt = {}
+for hylly in hylly_nimet:
+    str_rivi = config.get('varasto', hylly)
+    rivi = str_rivi.split(", ")
+    hyllyt.append(hylly)
+"""
+
+
+"""# Connect to the database using SQLAlchemy
+engine = create_engine(f"sqlite:///{db_file}", echo=False)
 Session = sessionmaker()
 Session.configure(bind=engine)
 
-session = Session()
+session2 = Session()
 Base = declarative_base()
 Base.metadata.create_all(engine)
-
+"""
 
 # Hylly parametrit
 # start with hylly A
-hyllyt = {"A": [5, 3, [3, 3, 4]],
+hyllyt = {"A": [3, 5, [3, 3, 4]],
           "B": [3, 3, [3, 3, 3]],
           "C": [3, 3, [3, 3, 3]],
           "D": [3, 3, [3, 3, 3]],
-          "E": [4, 2, [4, 4]]}
+          "E": [2, 4, [4, 4]]}
 
 hylly_valinta = list(hyllyt.keys())
 # start with hylly A
@@ -35,6 +53,10 @@ active_hylly = hylly_valinta[hylly_idx]
 # värikoodit
 varit = {"181210": "green",
          "043306": "yellow"}
+
+
+def read_ini_hyllyt(varasto_cfg):
+    pass
 
 
 def select_lava(pos):
@@ -88,8 +110,8 @@ def uusi_valine():
 
 
 def nayta_hylly(hylly):
-    tasot = hyllyt[hylly][0]
-    valit = hyllyt[hylly][1]
+    valit = hyllyt[hylly][0]
+    tasot = hyllyt[hylly][1]
     lavat = hyllyt[hylly][2]
 
     # erase old content first

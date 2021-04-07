@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 
+
 def open_file():
     """Open a file for editing."""
     filepath = askopenfilename(
@@ -14,6 +15,7 @@ def open_file():
         txt_edit.insert(tk.END, text)
     window.title(f"Simple Text Editor - {filepath}")
 
+
 def save_file():
     """Save the current file as a new file."""
     filepath = asksaveasfilename(
@@ -26,6 +28,7 @@ def save_file():
         text = txt_edit.get(1.0, tk.END)
         output_file.write(text)
     window.title(f"Simple Text Editor - {filepath}")
+
 
 window = tk.Tk()
 window.title("Simple Text Editor")

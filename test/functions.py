@@ -3,16 +3,71 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from db_structures import Paikka, Valine, Luokka, Tapahtuma, Tapahtuma_Luokka
 from datetime import datetime
+import configparser
 
 
-# Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test//db//test48.db', echo=False)
-Session = sessionmaker()
-Session.configure(bind=engine)
+class Config:
+    """
+    Description of Config
 
-session = Session()
-Base = declarative_base()
-Base.metadata.create_all(engine)
+    Attributes:
+        ini_file (string): given at init - there all config lie
+        session (SQLAlchemy session object)
+
+    Args:
+        ini_file (undefined):
+
+    """
+    def __init__(self, ini_file):
+        self.ini_file = ini_file
+
+        def db_connect(db_file):
+            # Connect to the database using SQLAlchemy
+            engine = create_engine(f"sqlite:///{db_file}", echo=False)
+            Session = sessionmaker()
+            Session.configure(bind=engine)
+            session = Session()
+            Base = declarative_base()
+            Base.metadata.create_all(engine)
+            return session
+
+        def read_cfg_ini():
+            str_hylly_nimet = cfg.get('varasto', 'hyllyt')
+            hylly_nimet = str_hylly_nimet.split(", ")
+            # build the hyllyt-dictionary
+            hyllyt = {}
+            for hylly in hylly_nimet:
+                str_rivi = cfg.get('varasto', hylly)
+                rivi = str_rivi.split(", ")
+                hyllyt.append(hylly)
+
+        # read config from ini-file
+        cfg = configparser.ConfigParser()
+        cfg.read(ini_file)
+        db_file = cfg.get('db', 'db_file')
+        self.session = db_connect(db_file)
+
+    def db_connect(db_file):
+        # Connect to the database using SQLAlchemy
+        engine = create_engine(f"sqlite:///{db_file}", echo=False)
+        Session = sessionmaker()
+        Session.configure(bind=engine)
+        session = Session()
+        Base = declarative_base()
+        Base.metadata.create_all(engine)
+        return session
+
+
+"""def db_connect(db_file):
+    # Connect to the database using SQLAlchemy
+    engine = create_engine(db_file, echo=False)
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    Base = declarative_base()
+    Base.metadata.create_all(engine)
+    return session
+"""
 
 
 def nyt_tapahtuu(session, valine, paikka, luokka, kuvaus):
@@ -25,6 +80,7 @@ def nyt_tapahtuu(session, valine, paikka, luokka, kuvaus):
         .one_or_none()
     )
     if tapa_luokka is None:
+        # !log this!
         return
     # create cross-references from tables valine and tapahtuma_luokka
     valine.tapahtumat.append(tapa)
@@ -43,16 +99,17 @@ def varastoi_valine(session, valine_ta_no, paikka_lyhyt, varasto_info):
     # etsi paikka lyhytnimestä
     valine = etsi_valine(session, valine_ta_no)
     if valine is None:
+        # !log this!
         return
 
     paikka = etsi_paikka(session, paikka_lyhyt)
     if paikka is None:
+        # !log this!
         return
     else:
         # do not allow to store the same valine again
         if valine in paikka.valineet:
-            print(f"väline {valine.ta_no} on jo varastoitu \
-                paikalle {paikka.lyhytnimi}")
+            # !log this!
             return
         else:
             paikka.valineet.append(valine)
@@ -131,33 +188,35 @@ def etsi_paikka(session, paikka_lyhyt):
     return paikka
 
 
-"""v = uusi_valine(session, "TA181210222", "181210", "Modux480 vanha")
-v = uusi_valine(session, "TA181210210", "181210", "Modux480 vanha")
-v = uusi_valine(session, "TA181210555", "181210", "Modux480 uusi")
-v = uusi_valine(session, "20184711", "181210", "Modux480 uusi")
-v = uusi_valine(session, "TA043306789", "043306", "Carital Optima EZ 90")
-v = uusi_valine(session, "2100900", "043306", "Carital Optima 80 uusi")
-v = uusi_valine(session, "TA043306666", "043306", "Quattro +3T 76")
-v = uusi_valine(session, "TA043306700", "043306", "Carital Optima EZ 80")
+if __name__ == "__main__":
+    cfg = Config('test//varasto_cfg.ini')
+    session = cfg.session
+    v = uusi_valine(session, "TA181210222", "181210", "Modux480 vanha")
+    v = uusi_valine(session, "TA181210210", "181210", "Modux480 vanha")
+    v = uusi_valine(session, "TA181210555", "181210", "Modux480 uusi")
+    v = uusi_valine(session, "20184711", "181210", "Modux480 uusi")
+    v = uusi_valine(session, "TA043306789", "043306", "Carital Optima EZ 90")
+    v = uusi_valine(session, "2100900", "043306", "Carital Optima 80 uusi")
+    v = uusi_valine(session, "TA043306666", "043306", "Quattro +3T 76")
+    v = uusi_valine(session, "TA043306700", "043306", "Carital Optima EZ 80")
 
-v = varastoi_valine(session, "TA181210222", "A000", "Irmeli käski")
-v = varastoi_valine(session, "TA181210210", "A000", "puskurivarastoon")
-v = varastoi_valine(session, "TA181210555", "A001", "no niin")
-v = varastoi_valine(session, "20184711", "A002", "jotain")
-v = varastoi_valine(session, "2100900", "E010", "jotain muuta")
-v = varastoi_valine(session, "TA043306666", "E010", "vain siksi")
-"""
+    v = varastoi_valine(session, "TA181210222", "A000", "Irmeli käski")
+    v = varastoi_valine(session, "TA181210210", "A000", "puskurivarastoon")
+    v = varastoi_valine(session, "TA181210555", "A001", "no niin")
+    v = varastoi_valine(session, "20184711", "A002", "jotain")
+    v = varastoi_valine(session, "2100900", "E010", "jotain muuta")
+    v = varastoi_valine(session, "TA043306666", "E010", "vain siksi")
 
-v = etsi_valine(session, "TA181210222")
-for vt in v.tapahtumat:
-    print(vt.ta_no, vt.luokka.tapaht_kuvaus,
-          vt.tapaht_kuvaus, vt.tapahtunut)
+    v = etsi_valine(session, "TA181210222")
+    for vt in v.tapahtumat:
+        print(vt.ta_no, vt.luokka.tapaht_kuvaus,
+              vt.tapaht_kuvaus, vt.tapahtunut)
 
-"""vkaks = etsi_valine(session, "2100900")
-paikka = etsi_paikka(session, "B111")
-vkaks.varastosta()
-"""
+    """vkaks = etsi_valine(session, "2100900")
+    paikka = etsi_paikka(session, "B111")
+    vkaks.varastosta()
+    """
 
-# v = varastoi_valine(session, "TA043306666", "E010", "vain uudestaan")
-# varastosta_valine(session, "TA181210222", "poistoon")
-session.commit()
+    # v = varastoi_valine(session, "TA043306666", "E010", "vain uudestaan")
+    # varastosta_valine(session, "TA181210222", "poistoon")
+    session.commit()
