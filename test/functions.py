@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 # Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test//db//test47.db', echo=False)
+engine = create_engine('sqlite:///test//db//test48.db', echo=False)
 Session = sessionmaker()
 Session.configure(bind=engine)
 

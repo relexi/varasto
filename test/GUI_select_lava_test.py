@@ -7,10 +7,10 @@ import tkinter as tk
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from functions import etsi_paikka
+from functions import etsi_paikka, valine_paikalla
 
 # Connect to the database using SQLAlchemy
-engine = create_engine('sqlite:///test//db//test47.db', echo=False)
+engine = create_engine('sqlite:///test//db//test48.db', echo=False)
 Session = sessionmaker()
 Session.configure(bind=engine)
 
@@ -21,7 +21,6 @@ Base.metadata.create_all(engine)
 
 # Hylly parametrit
 # start with hylly A
-
 hyllyt = {"A": [5, 3, [3, 3, 4]],
           "B": [3, 3, [3, 3, 3]],
           "C": [3, 3, [3, 3, 3]],
@@ -32,6 +31,10 @@ hylly_valinta = list(hyllyt.keys())
 # start with hylly A
 hylly_idx = 0
 active_hylly = hylly_valinta[hylly_idx]
+
+# värikoodit
+varit = {"181210": "green",
+         "043306": "yellow"}
 
 
 def select_lava(pos):
@@ -77,7 +80,11 @@ def displ_nix(e):
 
 
 def uusi_valine():
-    pass
+    frm_uusi_valine = tk.Frame(frm_info)
+    ent_ta_no = tk.Entry(frm_uusi_valine, text="vTam ")
+    frm_uusi_valine.grid(row=0, column=1)
+    frm_uusi_valine.columnconfigure(0, minsize=100)
+    ent_ta_no.grid(row=0, column=0)
 
 
 def nayta_hylly(hylly):
@@ -103,14 +110,22 @@ def nayta_hylly(hylly):
         for t in range(tasot):
             taso = tasot-t-1
             for lava in range(lavat[vali]):
+                txt_pos = hylly+str(vali)+str(taso)+str(lava)
                 frame = tk.Frame(
                     master=framek,
                     relief=tk.RAISED,
                     borderwidth=1,
-                    padx=20, pady=20
+                    padx=20, pady=20,
+                    highlightbackground="white",
+                    highlightthickness=5
                 )
                 frame.grid(row=t, column=lava, padx=8, pady=8)
-                txt_pos = hylly+str(vali)+str(taso)+str(lava)
+                list_valineet = valine_paikalla(session, txt_pos)
+
+                for valine in list_valineet:
+                    if valine.luokka.luokka_id == "181210":
+                        frame["highlightbackground"] = "green"
+
                 label = tk.Label(master=frame, text=txt_pos)
                 label.pack()
                 label.bind("<Button-1>", lambda e,
