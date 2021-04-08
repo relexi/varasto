@@ -13,9 +13,15 @@ class Config:
     Attributes:
         ini_file (string): given at init - there all config lie
         session (SQLAlchemy session object)
+        hyllyt (dict)
 
     Args:
-        ini_file (undefined):
+        ini_file (string): points to the config_ini-file
+
+    Methods:
+        db_connect(db_file)
+        read_hyllyt()
+        read_liokat()
 
     """
     def __init__(self, ini_file):
@@ -31,43 +37,55 @@ class Config:
             Base.metadata.create_all(engine)
             return session
 
-        def read_cfg_ini():
+        def read_hyllyt():
+            # build the hyllyt-dictionary
+            # hyllyt = {
+            #           "A": [3, 5, [3, 3, 4]],
+            #           "B": [3, 3, [3, 3, 3]],
+            #           "C": [3, 3, [3, 3, 3]],
+            #           "D": [3, 3, [3, 3, 3]],
+            #           "E": [2, 4, [4, 4]]
+            # }
+            hyllyt = {}
             str_hylly_nimet = cfg.get('varasto', 'hyllyt')
             hylly_nimet = str_hylly_nimet.split(", ")
-            # build the hyllyt-dictionary
-            hyllyt = {}
             for hylly in hylly_nimet:
                 str_rivi = cfg.get('varasto', hylly)
                 rivi = str_rivi.split(", ")
-                hyllyt.append(hylly)
+                int_rivi = [int(item) for item in rivi]
+                valit = int_rivi[0]
+                tasot = int_rivi[1]
+                lst_lavat = int_rivi[2:valit+2]
+                lst_rivi = [valit, tasot, lst_lavat]
+                hyllyt[hylly] = lst_rivi
+            return hyllyt
+
+        def read_luokat():
+            # build luokat-dictionary
+            # luokat = {
+            #   "181210": "sängyt",
+            #   "043306": "painehaavapatjat",
+            #   "122203": "pyörätuolit"
+            # }
+            luokat = {}
+            for (luokka_no, luokka_name) in cfg.items("luokat"):
+                luokat[luokka_no] = luokka_name
+            return luokat
+
+        def read_tapaht_luokat():
+            tapahtumaluokat = []
+            for (luokka_no, luokka_name) in cfg.items("tapahtumaluokat"):
+                tapahtumaluokat.append(luokka_name)
+            return tapahtumaluokat
 
         # read config from ini-file
         cfg = configparser.ConfigParser()
-        cfg.read(ini_file)
-        db_file = cfg.get('db', 'db_file')
-        self.session = db_connect(db_file)
-
-    def db_connect(db_file):
-        # Connect to the database using SQLAlchemy
-        engine = create_engine(f"sqlite:///{db_file}", echo=False)
-        Session = sessionmaker()
-        Session.configure(bind=engine)
-        session = Session()
-        Base = declarative_base()
-        Base.metadata.create_all(engine)
-        return session
-
-
-"""def db_connect(db_file):
-    # Connect to the database using SQLAlchemy
-    engine = create_engine(db_file, echo=False)
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-    Base = declarative_base()
-    Base.metadata.create_all(engine)
-    return session
-"""
+        cfg.read(ini_file, 'UTF-8')
+        self.db_file = cfg.get('db', 'db_file')
+        self.session = db_connect(self.db_file)
+        self.hyllyt = read_hyllyt()
+        self.luokat = read_luokat()
+        self.tapahtumaluokat = read_tapaht_luokat()
 
 
 def nyt_tapahtuu(session, valine, paikka, luokka, kuvaus):

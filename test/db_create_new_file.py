@@ -1,45 +1,22 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_structures import Paikka, Luokka, Tapahtuma_Luokka, Meta
+import functions
 
 # this program creates a new db-structure
-# with the help of functions in create_module and the parameters
-# given below
+# data taken via class Config in functions.py from varasto_cfg.ini
 
-# define parameters for the new db
+# get parameters for the new db from varasto_cfg.ini
 
-str_db_file = "test49.db"
+cfg = functions.Config('test//varasto_cfg.ini')
+session = cfg.session
+str_db_file = cfg.db_file
 str_db_version_info = "introduced table meta for db with version"\
                     + "and version_info"
 
-hyllyt = {
-    "A": [3, 5, [3, 3, 4]],
-    "B": [3, 3, [3, 3, 3]],
-    "C": [3, 3, [3, 3, 3]],
-    "D": [3, 3, [3, 3, 3]],
-    "E": [2, 4, [4, 4]]
-        }
-
-luokat = {
-    "181210": "sängyt",
-    "043306": "painehaavapatjat",
-    "122203": "pyörätuolit",
-    "120606": "kävelytelineet",
-    "181224": "sängynpäädynkohottaja",
-    "044808": "seisontatuet, kehikot",
-    "044821": "kippilaudat",
-    "093312": "suihkupaarit",
-    "093303": "suihkutuolit, pyörättömät",
-    "091203": "suihkupyörätuolit",
-    "120612": "kävelypöydät",
-             }
-
-tapahtumaluokat = [
-    "sisään",
-    "ulos",
-    "siirto",
-    "uusi"
-]
+hyllyt = cfg.hyllyt
+luokat = cfg.luokat
+tapahtumaluokat = cfg.tapahtumaluokat
 
 # define functions that actually create the db and structures
 
@@ -94,7 +71,7 @@ def luo_db_file(str_db_file, version_info):
     # create new db-file
     conn = None
     try:
-        conn = sqlite3.connect(f"test\\db\\{str_db_file}")
+        conn = sqlite3.connect(str_db_file)
     except Error as e:
         print(e)
     crsr = conn.cursor()
@@ -103,7 +80,7 @@ def luo_db_file(str_db_file, version_info):
         crsr.execute(query)
 
     # connect to the database through SQLAlchemy
-    engine = create_engine(f'sqlite:///test//db//{str_db_file}', echo=False)
+    engine = create_engine(f'sqlite:///{str_db_file}', echo=False)
     Session = sessionmaker()
     Session.configure(bind=engine)
     session = Session()
@@ -114,13 +91,8 @@ def luo_db_file(str_db_file, version_info):
     session.commit()
 
 
-def luo_db_paikat(str_db_file, hyllyt):
+def luo_db_paikat(session, hyllyt):
 
-    # connect to the database through SQLAlchemy
-    engine = create_engine(f'sqlite:///test//db//{str_db_file}', echo=False)
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
     # iterate through the places and call add_paikka
     for hylly, elem in hyllyt.items():
         valit = hyllyt[hylly][0]
@@ -144,12 +116,7 @@ def luo_db_paikat(str_db_file, hyllyt):
     session.commit()
 
 
-def luo_db_luokat(str_db_file, luokat):
-    # connect to the database through SQLAlchemy
-    engine = create_engine(f'sqlite:///test//db//{str_db_file}', echo=False)
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
+def luo_db_luokat(session, luokat):
 
     for no, nimi in luokat.items():
         onko = session.query(Luokka.luokka_id)\
@@ -162,12 +129,7 @@ def luo_db_luokat(str_db_file, luokat):
     session.commit()
 
 
-def luo_db_tapahtumaluokat(str_db_file, tapahtumat):
-    # connect to the database through SQLAlchemy
-    engine = create_engine(f'sqlite:///test//db//{str_db_file}', echo=False)
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
+def luo_db_tapahtumaluokat(session, tapahtumat):
 
     for luokka in tapahtumat:
         onko = session.query(Tapahtuma_Luokka.tapaht_kuvaus)\
@@ -184,6 +146,6 @@ def luo_db_tapahtumaluokat(str_db_file, tapahtumat):
 # database and then fill it with the table-data given above
 
 luo_db_file(str_db_file, str_db_version_info)
-luo_db_paikat(str_db_file, hyllyt)
-luo_db_luokat(str_db_file, luokat)
-luo_db_tapahtumaluokat(str_db_file, tapahtumaluokat)
+luo_db_paikat(session, hyllyt)
+luo_db_luokat(session, luokat)
+luo_db_tapahtumaluokat(session, tapahtumaluokat)
