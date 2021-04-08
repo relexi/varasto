@@ -4,11 +4,11 @@ from db_structures import Paikka, Luokka, Tapahtuma_Luokka, Meta
 import functions
 
 # this program creates a new db-structure
-# data taken via class Config in functions.py from varasto_cfg.ini
+# data is taken via class Config in functions.py from varasto_cfg.ini
+str_cfg_file = "test//varasto_cfg.ini"
 
 # get parameters for the new db from varasto_cfg.ini
-
-cfg = functions.Config('test//varasto_cfg.ini')
+cfg = functions.Config(str_cfg_file)
 session = cfg.session
 str_db_file = cfg.db_file
 str_db_version_info = "introduced table meta for db with version"\
@@ -92,7 +92,6 @@ def luo_db_file(str_db_file, version_info):
 
 
 def luo_db_paikat(session, hyllyt):
-
     # iterate through the places and call add_paikka
     for hylly, elem in hyllyt.items():
         valit = hyllyt[hylly][0]
@@ -117,7 +116,6 @@ def luo_db_paikat(session, hyllyt):
 
 
 def luo_db_luokat(session, luokat):
-
     for no, nimi in luokat.items():
         onko = session.query(Luokka.luokka_id)\
                .filter(Luokka.luokka_id == no).all()
@@ -130,7 +128,6 @@ def luo_db_luokat(session, luokat):
 
 
 def luo_db_tapahtumaluokat(session, tapahtumat):
-
     for luokka in tapahtumat:
         onko = session.query(Tapahtuma_Luokka.tapaht_kuvaus)\
                .filter(Tapahtuma_Luokka.tapaht_kuvaus == luokka).all()

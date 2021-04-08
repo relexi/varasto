@@ -8,20 +8,27 @@ import configparser
 
 class Config:
     """
-    Description of Config
+    Config provides the methods and attributes to read basic settings and
+    settings for creation of the db from an ini-file
 
     Attributes:
-        ini_file (string): given at init - there all config lie
+        ini_file (string): given at init
+        db_file: (string):
         session (SQLAlchemy session object)
         hyllyt (dict)
+        luokat (dict)
+        tapahtumaluokat (list)
 
     Args:
         ini_file (string): points to the config_ini-file
 
     Methods:
-        db_connect(db_file)
-        read_hyllyt()
-        read_liokat()
+        db_connect(db_file): creates a SQLAlchemy connection to the db and
+                             returns a session-object
+        read_hyllyt(): builds the hyllyt-dictionary from the ini and returns it
+        read_luokat(): builds the luokat-dictionary from the ini and returns it
+        read_tapaht_luokat(): builds a list with tapahtuma-luokat from ini
+                              and returns that
 
     """
     def __init__(self, ini_file):
@@ -72,6 +79,12 @@ class Config:
                 luokat[luokka_no] = luokka_name
             return luokat
 
+        def read_varit():
+            varit = {}
+            for (luokka_no, vari) in cfg.items("varit"):
+                varit[luokka_no] = vari
+            return varit
+
         def read_tapaht_luokat():
             tapahtumaluokat = []
             for (luokka_no, luokka_name) in cfg.items("tapahtumaluokat"):
@@ -81,11 +94,13 @@ class Config:
         # read config from ini-file
         cfg = configparser.ConfigParser()
         cfg.read(ini_file, 'UTF-8')
+        # set attributes
         self.db_file = cfg.get('db', 'db_file')
         self.session = db_connect(self.db_file)
         self.hyllyt = read_hyllyt()
         self.luokat = read_luokat()
         self.tapahtumaluokat = read_tapaht_luokat()
+        self.varit = read_varit()
 
 
 def nyt_tapahtuu(session, valine, paikka, luokka, kuvaus):

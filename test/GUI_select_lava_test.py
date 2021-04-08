@@ -11,48 +11,19 @@ from functions import etsi_paikka, valine_paikalla
 import functions
 
 # read configuration from ini-file
+str_cfg_file = "test//varasto_cfg.ini"
 # and use its functions
-cfg = functions.Config('test//varasto_cfg.ini')
+cfg = functions.Config(str_cfg_file)
 session = cfg.session
-
-"""db_file = config.get('db', 'db_file')
-str_hylly_nimet = config.get('varasto', 'hyllyt')
-hylly_nimet = str_hylly_nimet.split(", ")
-# build the hyllyt-dictionary
-hyllyt = {}
-for hylly in hylly_nimet:
-    str_rivi = config.get('varasto', hylly)
-    rivi = str_rivi.split(", ")
-    hyllyt.append(hylly)
-"""
-
-
-"""# Connect to the database using SQLAlchemy
-engine = create_engine(f"sqlite:///{db_file}", echo=False)
-Session = sessionmaker()
-Session.configure(bind=engine)
-
-session2 = Session()
-Base = declarative_base()
-Base.metadata.create_all(engine)
-"""
-
-# Hylly parametrit
+hyllyt = cfg.hyllyt
 # start with hylly A
-hyllyt = {"A": [3, 5, [3, 3, 4]],
-          "B": [3, 3, [3, 3, 3]],
-          "C": [3, 3, [3, 3, 3]],
-          "D": [3, 3, [3, 3, 3]],
-          "E": [2, 4, [4, 4]]}
-
 hylly_valinta = list(hyllyt.keys())
 # start with hylly A
 hylly_idx = 0
 active_hylly = hylly_valinta[hylly_idx]
 
 # värikoodit
-varit = {"181210": "green",
-         "043306": "yellow"}
+varit = cfg.varit
 
 
 def read_ini_hyllyt(varasto_cfg):
@@ -103,10 +74,12 @@ def displ_nix(e):
 
 def uusi_valine():
     frm_uusi_valine = tk.Frame(frm_info)
-    ent_ta_no = tk.Entry(frm_uusi_valine, text="vTam ")
     frm_uusi_valine.grid(row=0, column=1)
     frm_uusi_valine.columnconfigure(0, minsize=100)
-    ent_ta_no.grid(row=0, column=0)
+    lbl_ta_no = tk.Label(frm_uusi_valine, text="vTam ")
+    lbl_ta_no.grid(row=0, column=0)
+    ent_ta_no = tk.Entry(frm_uusi_valine, text="vTam ")
+    ent_ta_no.grid(row=0, column=1)
 
 
 def nayta_hylly(hylly):
@@ -145,8 +118,9 @@ def nayta_hylly(hylly):
                 list_valineet = valine_paikalla(session, txt_pos)
 
                 for valine in list_valineet:
-                    if valine.luokka.luokka_id == "181210":
-                        frame["highlightbackground"] = "green"
+                    str_luokka_id = valine.luokka.luokka_id
+                    if str_luokka_id in varit:
+                        frame["highlightbackground"] = varit[str_luokka_id]
 
                 label = tk.Label(master=frame, text=txt_pos)
                 label.pack()
