@@ -7,9 +7,10 @@ import tkinter as tk
 from functions import etsi_paikka, valine_paikalla
 import functions
 
-# read configuration from ini-file
+
 str_cfg_file = "test//varasto_cfg.ini"
-# and use its functions
+# read configuration from ini-file
+# and use its class "Config"
 cfg = functions.Config(str_cfg_file)
 session = cfg.session
 hyllyt = cfg.hyllyt

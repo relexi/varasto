@@ -110,7 +110,7 @@ def luo_db_paikat(session, hyllyt):
                     else:
                         paikka = Paikka(lyhytnimi=lyhytnimi, hylly=hylly,
                                         vali=vali, taso=taso,
-                                        lava=lava, active=0)
+                                        lava=lava, active=1)
                         session.add(paikka)
     session.commit()
 
