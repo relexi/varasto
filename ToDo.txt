@@ -2,6 +2,8 @@
       	- Layout!
       
       	- popup-Infos an eigenen Platz
+	
+	- Listenfenster-Design
       
       	- Väline    - uusi
                   	- uusi bulk
