@@ -1,0 +1,23 @@
+* GUI:
+      	- Layout!
+      
+      	- popup-Infos an eigenen Platz
+      
+      	- Väline    - uusi
+                  	- uusi bulk
+                  	- varastoon
+                  	- varastosta
+      
+      	- Hylly     - uusi
+                  	- muokata
+					
+		- Paikka	- activate/deactivate
+       
+      	- Etsi      - väline(et), luokittain, vapaa-texti, huomautus, kaikki
+                  	- paikka
+                            
+* Backend:
+      	- Hylly     - modifications, change database & config...
+        			- if hylly changes, paikat also change...
+      
+      	- Backup & Restore
