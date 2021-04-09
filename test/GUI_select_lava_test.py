@@ -4,9 +4,6 @@ zu Beginn eine Visualisierung der Regale mit Auswahlmöglichkeit der Plätze
 """
 
 import tkinter as tk
-# from sqlalchemy import create_engine
-# from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import sessionmaker
 from functions import etsi_paikka, valine_paikalla
 import functions
 
@@ -140,7 +137,16 @@ window.rowconfigure(1, minsize=200, weight=1)
 window.columnconfigure(1, minsize=800, weight=1)
 
 frm_menu = tk.Frame(window, relief=tk.RAISED, bd=2)
-frm_menu.columnconfigure(1, minsize=100, weight=1)
+
+frm_menu.columnconfigure(0, minsize=100, weight=1)
+frm_menu.rowconfigure(0, minsize=500, weight=1)
+frm_menu.rowconfigure(1, minsize=200, weight=1)
+
+frm_hyllymenu = tk.Frame(frm_menu, relief=tk.RAISED, bd=2)
+frm_alamenu = tk.Frame(frm_menu, relief=tk.RAISED, bd=2)
+frm_alamenu.columnconfigure(0, minsize=100, weight=1)
+frm_hyllymenu.columnconfigure(1, minsize=80, weight=1)
+
 frm_oikea = tk.Frame(window)
 frm_oikea.rowconfigure(0, minsize=500, weight=1)
 frm_oikea.rowconfigure(1, minsize=200, weight=1)
@@ -148,18 +154,21 @@ frm_oikea.rowconfigure(1, minsize=200, weight=1)
 frm_info = tk.Frame(frm_oikea, relief=tk.RAISED, bd=2)
 frm_hylly = tk.Frame(frm_oikea, relief=tk.RAISED, bd=2)
 
-btn_fwd = tk.Button(frm_menu, text=">", command=next_hylly)
-btn_ret = tk.Button(frm_menu, text="<", command=prev_hylly)
-lbl_actv = tk.Label(frm_menu, text="hylly "+active_hylly)
-btn_uusi_v = tk.Button(frm_menu, text="uusi väline", command=uusi_valine)
+btn_fwd = tk.Button(frm_hyllymenu, text=">", command=next_hylly)
+btn_ret = tk.Button(frm_hyllymenu, text="<", command=prev_hylly)
+lbl_actv = tk.Label(frm_hyllymenu, text="hylly "+active_hylly)
+btn_uusi_v = tk.Button(frm_alamenu, text="uusi väline", command=uusi_valine)
 
 lbl_actv.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 btn_ret.grid(row=0, column=0, sticky="w", padx=5)
 btn_fwd.grid(row=0, column=2, sticky="e", padx=5)
-btn_uusi_v.grid(row=1, column=0, columnspan=3, sticky="ew", padx=5)
+btn_uusi_v.grid(row=0, column=0, sticky="ew", padx=5)
 
+
+frm_hyllymenu.grid(row=0, column=0, sticky="nsew")
+frm_alamenu.grid(row=1, column=0, sticky="nsew")
 frm_menu.grid(row=0, column=0, sticky="ns")
-frm_oikea.grid(row=0, column=1, sticky="ns")
+frm_oikea.grid(row=0, column=1, sticky="nsw")
 frm_hylly.grid(row=0, column=0, sticky="ns")
 frm_info.grid(row=1, column=0, sticky="nsew")
 
