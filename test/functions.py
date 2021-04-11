@@ -5,6 +5,8 @@ from db_structures import Paikka, Valine, Luokka, Tapahtuma, Tapahtuma_Luokka
 from datetime import datetime
 import configparser
 
+str_cfg_file = "test//varasto_cfg.ini"
+
 
 class Config:
     """
@@ -54,14 +56,12 @@ class Config:
             #           "E": [2, 4, [4, 4]]
             # }
             hyllyt = {}
-            str_hylly_nimet = cfg.get('varasto', 'hyllyt')
-            hylly_nimet = str_hylly_nimet.split(", ")
-            for hylly in hylly_nimet:
-                str_rivi = cfg.get('varasto', hylly)
+            for (hylly, str_rivi) in cfg.items("varasto"):
                 rivi = str_rivi.split(", ")
                 int_rivi = [int(item) for item in rivi]
                 valit = int_rivi[0]
                 tasot = int_rivi[1]
+                hylly = hylly.upper()
                 lst_lavat = int_rivi[2:valit+2]
                 lst_rivi = [valit, tasot, lst_lavat]
                 hyllyt[hylly] = lst_rivi
@@ -222,8 +222,11 @@ def etsi_paikka(session, paikka_lyhyt):
 
 
 if __name__ == "__main__":
-    cfg = Config('test//varasto_cfg.ini')
+    # read configuration from ini-file
+    cfg = Config(str_cfg_file)
+    # establish session to db with info from cfg-file
     session = cfg.session
+
     v = uusi_valine(session, "TA181210222", "181210", "Modux480 vanha")
     v = uusi_valine(session, "TA181210210", "181210", "Modux480 vanha")
     v = uusi_valine(session, "TA181210555", "181210", "Modux480 uusi")
