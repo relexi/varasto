@@ -5,6 +5,7 @@ import functions
 
 # this program creates a new db-structure
 # data is taken via class Config in functions.py from varasto_cfg.ini
+
 str_cfg_file = "test//varasto_cfg.ini"
 
 # get parameters for the new db from varasto_cfg.ini

@@ -4,7 +4,7 @@ zu Beginn eine Visualisierung der Regale mit Auswahlmöglichkeit der Plätze
 """
 
 import tkinter as tk
-from functions import etsi_paikka, valine_paikalla
+from functions import etsi_paikka, valine_paikalla, uusi_valine
 import functions
 
 
@@ -22,10 +22,6 @@ active_hylly = hylly_valinta[hylly_idx]
 
 # värikoodit
 varit = cfg.varit
-
-
-def read_ini_hyllyt(varasto_cfg):
-    pass
 
 
 def select_lava(pos):
@@ -70,14 +66,55 @@ def displ_nix(e):
         label.destroy()
 
 
-def uusi_valine():
-    frm_uusi_valine = tk.Frame(frm_info)
-    frm_uusi_valine.grid(row=0, column=1)
-    frm_uusi_valine.columnconfigure(0, minsize=100)
-    lbl_ta_no = tk.Label(frm_uusi_valine, text="vTam ")
-    lbl_ta_no.grid(row=0, column=0)
-    ent_ta_no = tk.Entry(frm_uusi_valine, text="vTam ")
-    ent_ta_no.grid(row=0, column=1)
+def uusi_valine_gui():
+    # this method creates a new valine based on user input.
+
+    def valine():
+        val = uusi_valine(
+           session, ent_ta_no.get(), ent_luokka.get(), ent_kuvaus.get())
+        paikka = functions.etsi_paikka(session, ent_paikka.get())
+        paikka.valineet.append(val)
+        val.active = 1
+        functions.nyt_tapahtuu(session, val, paikka, "sisään",
+                               "luotu ja varastoitu")
+        session.commit
+
+    window_in = tk.Tk()
+    window_in.title("uusi väline")
+    window_in.columnconfigure(1, minsize=300)
+
+    lbl_ta_no = tk.Label(window_in, text="VTam-No:")
+    lbl_luokka = tk.Label(window_in, text="luokka:")
+    lbl_kuvaus = tk.Label(window_in, text="kuvaus:")
+    lbl_huom = tk.Label(window_in, text="huomautus:")
+    lbl_paikka = tk.Label(window_in, text="paikka:")
+
+    ent_ta_no = tk.Entry(window_in)
+    ent_luokka = tk.Entry(window_in)
+    ent_kuvaus = tk.Entry(window_in)
+    ent_huom = tk.Entry(window_in)
+    ent_paikka = tk.Entry(window_in)
+
+    btn_tallenna = tk.Button(window_in,
+                             text="Tallenna",
+                             command=valine)
+    btn_peruuta = tk.Button(window_in,
+                            text="Peruuta",
+                            command=window_in.destroy)
+
+    lbl_ta_no.grid(row=0, column=0, sticky="nw")
+    lbl_luokka.grid(row=1, column=0, sticky="nw")
+    lbl_kuvaus.grid(row=2, column=0, sticky="nw")
+    lbl_huom.grid(row=3, column=0, sticky="nw")
+    lbl_paikka.grid(row=4, column=0, sticky="nw")
+    btn_peruuta.grid(row=5, column=0, sticky="nw")
+
+    ent_ta_no.grid(row=0, column=1, sticky="new")
+    ent_luokka.grid(row=1, column=1, sticky="new")
+    ent_kuvaus.grid(row=2, column=1, sticky="new")
+    ent_huom.grid(row=3, column=1, sticky="new")
+    ent_paikka.grid(row=4, column=1, sticky="new")
+    btn_tallenna.grid(row=5, column=1, sticky="new")
 
 
 def nayta_hylly(hylly):
@@ -158,7 +195,10 @@ frm_hylly = tk.Frame(frm_oikea, relief=tk.RAISED, bd=2)
 btn_fwd = tk.Button(frm_hyllymenu, text=">", command=next_hylly)
 btn_ret = tk.Button(frm_hyllymenu, text="<", command=prev_hylly)
 lbl_actv = tk.Label(frm_hyllymenu, text="hylly "+active_hylly)
-btn_uusi_v = tk.Button(frm_alamenu, text="uusi väline", command=uusi_valine)
+btn_uusi_v = tk.Button(frm_alamenu,
+                       text="uusi väline",
+                       command=uusi_valine_gui
+                       )
 
 lbl_actv.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 btn_ret.grid(row=0, column=0, sticky="w", padx=5)
