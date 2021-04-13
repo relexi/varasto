@@ -4,6 +4,7 @@ zu Beginn eine Visualisierung der Regale mit Auswahlmöglichkeit der Plätze
 """
 
 import tkinter as tk
+from tkinter import ttk
 import functions
 
 
@@ -65,7 +66,7 @@ def displ_nix(e):
         label.destroy()
 
 
-def uusi_valine_gui():
+def uusi_valine_gui(callback):
     # this function creates a new valine based on user input.
 
     """    def valine():
@@ -80,7 +81,9 @@ def uusi_valine_gui():
     """
 
     fields = ["TreVtam", "luokka", "nimi", "huom", "paikka"]
-    frm_valinekysely = functions.Kysely(frm_info, "uusi väline", fields)
+    frm_valinekysely = functions.Kysely(frm_info,
+                                        "uusi väline",
+                                        fields, callback)
 
 
 def nayta_hylly(hylly):
@@ -158,13 +161,13 @@ frm_oikea.rowconfigure(1, minsize=300, weight=1)
 frm_info = tk.Frame(frm_oikea, relief=tk.RAISED, bd=2)
 frm_hylly = tk.Frame(frm_oikea, relief=tk.RAISED, bd=2)
 
-btn_fwd = tk.Button(frm_hyllymenu, text=">", command=next_hylly)
-btn_ret = tk.Button(frm_hyllymenu, text="<", command=prev_hylly)
-lbl_actv = tk.Label(frm_hyllymenu, text="hylly "+active_hylly)
-btn_uusi_v = tk.Button(frm_alamenu,
-                       text="uusi väline",
-                       command=uusi_valine_gui
-                       )
+btn_fwd = ttk.Button(frm_hyllymenu, text=">", command=next_hylly)
+btn_ret = ttk.Button(frm_hyllymenu, text="<", command=prev_hylly)
+lbl_actv = ttk.Label(frm_hyllymenu, text="hylly "+active_hylly)
+btn_uusi_v = ttk.Button(frm_alamenu,
+                        text="uusi väline",
+                        command=lambda: uusi_valine_gui(functions.uusi_valine)
+                        )
 
 lbl_actv.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 btn_ret.grid(row=0, column=0, sticky="w", padx=5)

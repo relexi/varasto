@@ -12,24 +12,21 @@ LARGE_FONT = ("Verdana", 12)
 
 
 class Kysely:
-    def __init__(self, parent, title, fields):
-
-        def full_return(entry_fields):
-            returnfields = {}
-            for field in entry_fields:
-                if str(field["text"]) in (fields):
-                    returnfields.update({field["text"]: field.get()})
-            self.returnfields = returnfields
-
+    def __init__(self, parent, title, fields, callback):
         self.title = title
         self.fields = fields
         self.parent = parent
+
         self.root = tk.Frame(self.parent)
         self.root.columnconfigure(1, minsize=200)
         self.root.grid()
         self.lbl_title = tk.Label(self.root, text=title, font=LARGE_FONT).grid(
             row=0, columnspan=2, sticky="ew"
         )
+        # read configuration from ini-file
+        cfg = Config(str_cfg_file)
+        # establish session to db with info from cfg-file
+        session = cfg.session
         self.entry_fields = []
         idx = 1
         for field in fields:
@@ -43,19 +40,25 @@ class Kysely:
         btn_tallenna = ttk.Button(self.root,
                                   text="Tallenna",
                                   command=lambda entry=self.entry_fields:
-                                  full_return(entry))
+                                  full_return(entry, callback))
         btn_tallenna.grid(row=idx, column=1, sticky="se", padx=20, pady=10)
         btn_peruuta = ttk.Button(self.root,
                                  text="Peruuta",
                                  command=self.root.destroy)
         btn_peruuta.grid(row=idx, column=0, sticky="sw", padx=20, pady=10)
 
+        def full_return(entry_fields, callback):
+            returnfields = {}
+            for field in entry_fields:
+                if str(field["text"]) in (fields):
+                    returnfields.update({field["text"]: field.get()})
+            callback(session, returnfields)
+
 
 class Config:
     """
     Config provides the methods and attributes to read basic settings and
     settings for creation of the db from an ini-file
-
     Attributes:
         ini_file (string): given at init
         db_file: (string):
@@ -63,10 +66,8 @@ class Config:
         hyllyt (dict)
         luokat (dict)
         tapahtumaluokat (list)
-
     Args:
         ini_file (string): points to the config_ini-file
-
     Methods:
         db_connect(db_file): creates a SQLAlchemy connection to the db and
                              returns a session-object
@@ -74,7 +75,6 @@ class Config:
         read_luokat(): builds the luokat-dictionary from the ini and returns it
         read_tapaht_luokat(): builds a list with tapahtuma-luokat from ini
                               and returns that
-
     """
     def __init__(self, ini_file):
         self.ini_file = ini_file
@@ -146,7 +146,7 @@ class Config:
         self.varit = read_varit()
 
 
-def nyt_tapahtuu(session, valine, paikka, luokka, kuvaus):
+def nyt_tapahtuu(session, valine, paikka, luokka, kuvaus="ei huom"):
     # first create a new tapahtuma
     tapa = Tapahtuma(tapahtunut=datetime.now())
     # search for the correspondung tapahtuma_luokka
@@ -175,22 +175,23 @@ def varastoi_valine(session, valine_ta_no, paikka_lyhyt, varasto_info):
     # etsi paikka lyhytnimestä
     valine = etsi_valine(session, valine_ta_no)
     if valine is None:
-        # !log this!
+        print("varastoi_väline - väline ei löytynyt")
         return
 
     paikka = etsi_paikka(session, paikka_lyhyt)
     if paikka is None:
-        # !log this!
+        print("varastoi_väline - paikka ei löytynyt")
         return
     else:
         # do not allow to store the same valine again
         if valine in paikka.valineet:
-            # !log this!
+            print("varastoi_väline - väline on jo paikalla")
             return
         else:
             paikka.valineet.append(valine)
             valine.active = 1
             nyt_tapahtuu(session, valine, paikka, "sisään", varasto_info)
+            session.commit()
     return valine
 
 
@@ -209,7 +210,16 @@ def varastosta_valine(session, valine_ta_no, varasto_info):
     return valine
 
 
-def uusi_valine(session, ta_no, luokka_no, valine_nimi):
+def uusi_valine(session, fields):
+    # decode parameters from fields:
+    # {'TreVtam': 'TA181210255', 'luokka': '181210',
+    # 'nimi': 'Modux', 'huom': 'nix!', 'paikka': 'A021'}
+    ta_no = fields["TreVtam"]
+    luokka_no = fields["luokka"]
+    valine_nimi = fields["nimi"]
+    huom = fields["huom"]
+    paikka = fields["paikka"]
+
     # onko valine olemassa?
     valine = etsi_valine(session, ta_no)
     if valine is not None:
@@ -231,13 +241,21 @@ def uusi_valine(session, ta_no, luokka_no, valine_nimi):
         luokka.valineet_luokassa.append(valine)
 
     # write new tapahtuma into db for creation of valine
-    nyt_tapahtuu(session, valine, None, "uusi", "Väline luotu")
+    nyt_tapahtuu(session, valine, None, "uusi", huom)
 
     # assign properties to valine-object and store it to the db
     valine.luokka = luokka
     valine.active = 0  # intitially valine is not active
     session.add(valine)
     session.commit()
+
+    # if paikka is given, then store valine to paikka
+    if paikka is not None:
+        varastoi_valine(session, ta_no, paikka, "luotu ja varastoitu")
+        print("valine varastoitu paikalle", paikka)
+    else:
+        print("paikka ei ole tiedossa")
+
     return valine
 
 
@@ -269,7 +287,6 @@ if __name__ == "__main__":
     cfg = Config(str_cfg_file)
     # establish session to db with info from cfg-file
     session = cfg.session
-
     v = uusi_valine(session, "TA181210222", "181210", "Modux480 vanha")
     v = uusi_valine(session, "TA181210210", "181210", "Modux480 vanha")
     v = uusi_valine(session, "TA181210555", "181210", "Modux480 uusi")
