@@ -30,22 +30,22 @@ def select_lava(pos):
 
 def next_hylly():
     # get the actual "hylly" from the label set earlier
-    hylly_idx = abs(65-ord(lbl_actv["text"][6]))
+    hylly_idx = abs(65-ord(btn_actv["text"][6]))
     hylly_idx += 1
     if hylly_idx == len(hylly_valinta):
         hylly_idx = 0
     hylly = hylly_valinta[hylly_idx]
-    lbl_actv["text"] = "hylly "+hylly
+    btn_actv["text"] = "hylly "+hylly
     nayta_hylly(hylly)
 
 
 def prev_hylly():
-    hylly_idx = abs(65-ord(lbl_actv["text"][6]))
+    hylly_idx = abs(65-ord(btn_actv["text"][6]))
     hylly_idx -= 1
     if hylly_idx < 0:
         hylly_idx = len(hylly_valinta)-1
     hylly = hylly_valinta[hylly_idx]
-    lbl_actv["text"] = "hylly "+hylly
+    btn_actv["text"] = "hylly "+hylly
     nayta_hylly(hylly)
 
 
@@ -60,8 +60,8 @@ def displ_lava(pos):
             lbl_info_popup["text"] += valine.ta_no + " " + valine.nimi + "\n"
 
 
-def displ_nix(e):
-    lbl = frm_info.winfo_children()
+def displ_nix(frm):
+    lbl = frm.winfo_children()
     for label in lbl:
         label.destroy()
 
@@ -81,7 +81,8 @@ def uusi_valine_gui(callback):
     """
 
     fields = ["TreVtam", "luokka", "nimi", "huom", "paikka"]
-    frm_valinekysely = functions.Kysely(frm_info,
+    displ_nix(frm_hylly)
+    frm_valinekysely = functions.Kysely(frm_hylly,
                                         "uusi väline",
                                         fields, callback)
 
@@ -92,11 +93,8 @@ def nayta_hylly(hylly):
     lavat = hyllyt[hylly][2]
 
     # erase old content first
-    widget_list = frm_hylly.winfo_children()
-    for i in range(len(widget_list)):
-        child = widget_list[i]
-        child.destroy()
-    # then build the shelfs
+    displ_nix(frm_hylly)
+
     for vali in range(valit):
         framek = tk.Frame(
             master=frm_hylly,
@@ -157,22 +155,27 @@ frm_hyllymenu.columnconfigure(1, minsize=80, weight=1)
 frm_oikea = tk.Frame(window)
 frm_oikea.rowconfigure(0, minsize=500, weight=1)
 frm_oikea.rowconfigure(1, minsize=300, weight=1)
+frm_oikea.columnconfigure(0, minsize=800, weight=1)
 
 frm_info = tk.Frame(frm_oikea, relief=tk.RAISED, bd=2)
 frm_hylly = tk.Frame(frm_oikea, relief=tk.RAISED, bd=2)
 
 btn_fwd = ttk.Button(frm_hyllymenu, text=">", command=next_hylly)
 btn_ret = ttk.Button(frm_hyllymenu, text="<", command=prev_hylly)
-lbl_actv = ttk.Label(frm_hyllymenu, text="hylly "+active_hylly)
-btn_uusi_v = ttk.Button(frm_alamenu,
+btn_actv = ttk.Button(frm_hyllymenu,
+                      text="hylly "+active_hylly,
+                      command=lambda: nayta_hylly(active_hylly)
+                      )
+btn_uusi_v = ttk.Button(frm_hyllymenu,
                         text="uusi väline",
-                        command=lambda: uusi_valine_gui(functions.uusi_valine)
+                        command=lambda: uusi_valine_gui(
+                            callback=functions.uusi_valine)
                         )
 
-lbl_actv.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 btn_ret.grid(row=0, column=0, sticky="w", padx=5)
+btn_actv.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 btn_fwd.grid(row=0, column=2, sticky="e", padx=5)
-btn_uusi_v.grid(row=0, column=0, sticky="ew", padx=5)
+btn_uusi_v.grid(row=1, column=0, columnspan=3, sticky="ew", padx=5)
 
 
 frm_hyllymenu.grid(row=0, column=0, sticky="nsew")
