@@ -82,9 +82,7 @@ def uusi_valine_gui(callback):
 
     fields = ["TreVtam", "luokka", "nimi", "huom", "paikka"]
     displ_nix(frm_hylly)
-    frm_valinekysely = functions.Kysely(frm_hylly,
-                                        "uusi väline",
-                                        fields, callback)
+    functions.Kysely(frm_hylly, "uusi väline", fields, callback)
 
 
 def nayta_hylly(hylly):
@@ -132,7 +130,7 @@ def nayta_hylly(hylly):
                 label.bind("<Enter>", lambda e,
                            pos=hylly+str(vali)+str(taso)+str(lava):
                            displ_lava(pos))
-                label.bind("<Leave>", displ_nix)
+                label.bind("<Leave>", lambda: displ_nix(frm_info))
 
 
 window = tk.Tk()

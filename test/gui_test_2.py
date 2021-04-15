@@ -7,20 +7,32 @@ class Vasen(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-        self.kokolabel = tk.Label(master=self, text="vasen", bg="red")
-        self.kokolabel.grid(row=0, column=0)
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
+        self.grid(sticky="nw")
 
 
 class Oikea(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-        self.kokolabel = tk.Label(master=self, text="oikea", bg="green")
-        self.kokolabel.grid(row=0, column=0)
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
+        self.grid()
+
+
+class Menu(Vasen):
+    def __init__(self, parent, entries):
+        tk.Frame.__init__(self, parent)
+        self.parent = parent
+        self.root = tk.Frame(self.parent)
+        self.root.columnconfigure(0, minsize=100)
+        self.root.grid(padx=10, pady=20)
+        for key, value in entries.items():
+            global funct
+            funct = value
+            self.key = ttk.Button(self.root, text=key, command=funct)
+            self.key.grid()
 
 
 class Kysely(Oikea):
@@ -37,9 +49,11 @@ class Kysely(Oikea):
         self.fields = fields
         self.parent = parent
         self.root = tk.Frame(self.parent)
-        self.root.columnconfigure(1, minsize=200)
+        self.root.columnconfigure(0, minsize=200)
         self.root.grid(padx=10, pady=20)
-        self.lbl_title = tk.Label(self.root, text=title, font=LARGE_FONT).grid(
+        self.lbl_title = ttk.Label(self.root,
+                                   text=title,
+                                   font=LARGE_FONT).grid(
             row=0, columnspan=2, sticky="ew"
         )
         self.entry_fields = []
@@ -73,12 +87,14 @@ class MainApplication(tk.Frame):
         self.vasen.grid(row=0, column=0)
         self.oikea.grid(row=0, column=1)
 
-        self.columnconfigure(0, minsize=300, weight=1)
+        self.columnconfigure(0, minsize=100, weight=1)
         self.columnconfigure(1, minsize=300, weight=1)
         self.rowconfigure(0, minsize=200, weight=1)
 
-        fields = ["TreVtam", "luokka", "nimi", "huomautus", "paikka"]
-        Kysely(self.oikea, "uusi väline", fields)
+        menu_entries = {"uusi väline": "uusi_valine",
+                        "etsi väline": "etsi_valine"}
+
+        Menu(self.vasen, menu_entries)
 
 
 if __name__ == "__main__":
