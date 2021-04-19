@@ -3,9 +3,13 @@ from tkinter import ttk
 LARGE_FONT = ("Verdana", 12)
 
 
+def funct_caller(returnfields):
+    print(returnfields)
+
+
 class Vasen(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
+        tk.Frame.__init__(self, *args, **kwargs)
         self.parent = parent
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -14,29 +18,29 @@ class Vasen(tk.Frame):
 
 class Oikea(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
+        tk.Frame.__init__(self, *args, **kwargs)
         self.parent = parent
         self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1, minsize=300)
         self.grid()
 
 
 class Menu(Vasen):
     def __init__(self, parent, entries):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self)
+        self.root = tk.Frame()
         self.parent = parent
-        self.root = tk.Frame(self.parent)
         self.root.columnconfigure(0, minsize=100)
-        self.root.grid(padx=10, pady=20)
+        self.root.grid(row=0, sticky="nw", padx=10, pady=20)
         for key, value in entries.items():
-            global funct
-            funct = value
-            self.key = ttk.Button(self.root, text=key, command=funct)
+            self.key = ttk.Button(self.root,
+                                  text=key,
+                                  command=value)
             self.key.grid()
 
 
 class Kysely(Oikea):
-    def __init__(self, parent, title, fields):
+    def __init__(self, parent, title, fields, callback):
 
         def full_return(entry_fields):
             returnfields = {}
@@ -44,10 +48,12 @@ class Kysely(Oikea):
                 if str(field["text"]) in (fields):
                     returnfields.update({field["text"]: field.get()})
             self.returnfields = returnfields
+            callback(returnfields)
 
         self.title = title
         self.fields = fields
         self.parent = parent
+        self.callback = callback
         self.root = tk.Frame(self.parent)
         self.root.columnconfigure(0, minsize=200)
         self.root.grid(padx=10, pady=20)
@@ -78,12 +84,19 @@ class Kysely(Oikea):
 
 
 class MainApplication(tk.Frame):
+
+    def uusi_valine(self):
+        fields = ["vtam", "luokka", "nimi", "huom", "paikka"]
+        Kysely(main.oikea, "uusi väline", fields, funct_caller)
+
+    def etsi_valine(self):
+        pass
+
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
 
         self.vasen = Vasen(self)
         self.oikea = Oikea(self)
-
         self.vasen.grid(row=0, column=0)
         self.oikea.grid(row=0, column=1)
 
@@ -91,13 +104,13 @@ class MainApplication(tk.Frame):
         self.columnconfigure(1, minsize=300, weight=1)
         self.rowconfigure(0, minsize=200, weight=1)
 
-        menu_entries = {"uusi väline": "uusi_valine",
-                        "etsi väline": "etsi_valine"}
-
+        menu_entries = {"uusi väline": self.uusi_valine,
+                        "etsi väline": self.etsi_valine}
         Menu(self.vasen, menu_entries)
 
 
 if __name__ == "__main__":
     root = tk.Tk()
-    MainApplication(root).grid(row=0, column=0, sticky="nsew")
+    main = MainApplication(root)
+    main.grid(row=0, column=0, sticky="nsew")
     root.mainloop()
