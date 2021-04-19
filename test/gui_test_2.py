@@ -1,10 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+import functions
+
 LARGE_FONT = ("Verdana", 12)
-
-
-def funct_caller(returnfields):
-    print(returnfields)
 
 
 class Vasen(tk.Frame):
@@ -48,7 +46,7 @@ class Kysely(Oikea):
                 if str(field["text"]) in (fields):
                     returnfields.update({field["text"]: field.get()})
             self.returnfields = returnfields
-            callback(returnfields)
+            callback(session, returnfields)
 
         self.title = title
         self.fields = fields
@@ -60,34 +58,47 @@ class Kysely(Oikea):
         self.lbl_title = ttk.Label(self.root,
                                    text=title,
                                    font=LARGE_FONT).grid(
-            row=0, columnspan=2, sticky="ew"
-        )
+            columnspan=2)
         self.entry_fields = []
         idx = 1
         for field in fields:
-            lbl = ttk.Label(self.root, text=f"{field} :")
-            ent = ttk.Entry(self.root, text=field)
-            self.entry_fields.append(ent)
-            lbl.grid(row=idx, column=0, sticky="nw", padx=20, pady=5)
-            ent.grid(row=idx, column=1, sticky="nwe", padx=20, pady=5)
+            self.lbl = ttk.Label(self.root, text=f"{field} :")
+            self.ent = ttk.Entry(self.root, text=field)
+            self.entry_fields.append(self.ent)
+            self.lbl.grid(row=idx, column=0, sticky="nw", padx=20, pady=5)
+            self.ent.grid(row=idx, column=1, sticky="nwe", padx=20, pady=5)
             idx += 1
 
-        btn_tallenna = ttk.Button(self.root,
-                                  text="Tallenna",
-                                  command=lambda entry=self.entry_fields:
-                                  full_return(entry))
-        btn_tallenna.grid(row=idx, column=1, sticky="se", padx=20, pady=10)
-        btn_peruuta = ttk.Button(self.root,
-                                 text="Peruuta",
-                                 command=self.root.destroy)
-        btn_peruuta.grid(row=idx, column=0, sticky="sw", padx=20, pady=10)
+        btn_tallenna = ttk.Button(
+            self.root,
+            text="Tallenna",
+            command=lambda entry_fields=self.entry_fields:
+            full_return(entry_fields)
+            )
+        btn_tallenna.grid(
+            row=idx, column=1,
+            sticky="se", padx=20, pady=10
+            )
+        btn_peruuta = ttk.Button(
+            self.root,
+            text="Peruuta",
+            command=self.root.destroy
+            )
+        btn_peruuta.grid(
+            row=idx, column=0,
+            sticky="sw", padx=20, pady=10
+            )
 
 
 class MainApplication(tk.Frame):
 
     def uusi_valine(self):
-        fields = ["vtam", "luokka", "nimi", "huom", "paikka"]
-        Kysely(main.oikea, "uusi väline", fields, funct_caller)
+        fields = ["TreVtam", "luokka", "nimi", "huom", "paikka"]
+        Kysely(
+            main.oikea,
+            "uusi väline",
+            fields,
+            functions.uusi_valine)
 
     def etsi_valine(self):
         pass
@@ -110,6 +121,12 @@ class MainApplication(tk.Frame):
 
 
 if __name__ == "__main__":
+    # read configuration from ini-file
+    str_cfg_file = "test//varasto_cfg.ini"
+    cfg = functions.Config(str_cfg_file)
+    # establish session to db with info from cfg-file
+    session = cfg.session
+
     root = tk.Tk()
     main = MainApplication(root)
     main.grid(row=0, column=0, sticky="nsew")
