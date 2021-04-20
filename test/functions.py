@@ -240,8 +240,11 @@ def uusi_valine(session, fields):
     else:
         luokka.valineet_luokassa.append(valine)
 
+    if huom:
+        valine.huomautus = huom
+
     # write new tapahtuma into db for creation of valine
-    nyt_tapahtuu(session, valine, None, "uusi", huom)
+    nyt_tapahtuu(session, valine, None, "uusi", "väline luotu")
 
     # assign properties to valine-object and store it to the db
     valine.luokka = luokka
@@ -251,7 +254,7 @@ def uusi_valine(session, fields):
 
     # if paikka is given, then store valine to paikka
     if paikka is not None:
-        varastoi_valine(session, ta_no, paikka, "luotu ja varastoitu")
+        varastoi_valine(session, ta_no, paikka, "väline varastoitu")
         print("valine varastoitu paikalle", paikka)
     else:
         print("paikka ei ole tiedossa")
