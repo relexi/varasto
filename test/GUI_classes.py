@@ -58,7 +58,7 @@ class Kysely(Oikea):
                 parent.clear()
                 self.lbl_status = ttk.Label(
                     parent,
-                    text=status,
+                    text=f"{status.ta_no} {status.paikka.lyhytnimi}",
                     font=LARGE_FONT
                 ).grid(columnspan=2, pady=20)
 
@@ -116,13 +116,13 @@ class MainApplication(tk.Frame):
             fields,
             functions.uusi_valine)
 
-    def etsi_valine(self):
+    def etsi(self):
         fields = ["hakusana"]
         Kysely(
             main.oikea,
             "etsi väline(et)",
             fields,
-            functions.etsi_valine
+            functions.etsi_jotain
         )
 
     def __init__(self, parent, *args, **kwargs):
@@ -138,7 +138,7 @@ class MainApplication(tk.Frame):
         self.rowconfigure(0, minsize=200, weight=1)
 
         menu_entries = {"uusi väline": self.uusi_valine,
-                        "etsi väline": self.etsi_valine}
+                        "etsi väline": self.etsi}
         Menu(self.vasen, menu_entries)
 
 

@@ -276,6 +276,15 @@ def etsi_valine(session, ta_no):
     return valine
 
 
+def etsi_jotain(session, hakusana):
+    loyto = (
+        session.query(Valine)
+        .filter(Valine.ta_no.like(hakusana))
+        .all()
+    )
+    return loyto
+
+
 def etsi_paikka(session, paikka_lyhyt):
     paikka = (
         session.query(Paikka)

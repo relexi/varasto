@@ -130,7 +130,7 @@ def nayta_hylly(hylly):
                 label.bind("<Enter>", lambda e,
                            pos=hylly+str(vali)+str(taso)+str(lava):
                            displ_lava(pos))
-                label.bind("<Leave>", lambda: displ_nix(frm_info))
+                label.bind("<Leave>", lambda e: displ_nix(frm_info))
 
 
 window = tk.Tk()
