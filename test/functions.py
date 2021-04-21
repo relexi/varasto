@@ -276,10 +276,13 @@ def etsi_valine(session, ta_no):
     return valine
 
 
-def etsi_jotain(session, hakusana):
+def etsi_jotain(session, fields):
+    # decode hakusana from fields
+    hakusana = fields["hakusana"]
+
     loyto = (
         session.query(Valine)
-        .filter(Valine.ta_no.like(hakusana))
+        .filter(Valine.ta_no.ilike(hakusana))
         .all()
     )
     return loyto
