@@ -53,14 +53,10 @@ class Kysely(Oikea):
                 if str(field["text"]) in (fields):
                     returnfields.update({field["text"]: field.get()})
             self.returnfields = returnfields
-            status = callback(session, returnfields)
-            if status:
+            result = callback(session, returnfields)
+            if result:
                 parent.clear()
-                self.lbl_status = ttk.Label(
-                    parent,
-                    text=f"{status.ta_no} {status.paikka.lyhytnimi}",
-                    font=LARGE_FONT
-                ).grid(columnspan=2, pady=20)
+                Tulos(parent, "tulos", result)
 
         self.title = title
         self.fields = fields
@@ -104,6 +100,19 @@ class Kysely(Oikea):
             row=idx, column=0,
             sticky="sw", padx=20, pady=10
             )
+
+
+class Tulos(Oikea):
+    def __init__(self, parent, title, sisalto):
+        # clear first
+        parent.clear()  # usually parent is of class Oikea
+        self.title = title
+        self.sisalto = sisalto
+        self.lbl_result = ttk.Label(
+                parent,
+                text=f"{sisalto.ta_no} {sisalto.paikka.lyhytnimi}",
+                font=LARGE_FONT
+                ).grid(columnspan=2, pady=20)
 
 
 class MainApplication(tk.Frame):
