@@ -1,6 +1,21 @@
 import tkinter as tk
 from tkinter import ttk
+import functions
 LARGE_FONT = ("Verdana", 12)
+
+
+class Oikea(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        tk.Frame.__init__(self, *args, **kwargs)
+        self.parent = parent
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1, minsize=300)
+        self.grid()
+
+    def clear(self):
+        labels = self.winfo_children()
+        for lbl in labels:
+            lbl.destroy()
 
 
 class Kysely:
@@ -43,8 +58,31 @@ class Kysely:
         btn_peruuta.grid(row=idx, column=0, sticky="sw", padx=20, pady=10)
 
 
+class Tulos(Oikea):
+    def __init__(self, parent, title, sisalto):
+        # clear first
+        parent.clear()  # usually parent is of class Oikea
+        self.title = title
+        self.sisalto = sisalto
+        print(type(sisalto))
+        print(sisalto)
+        for item in sisalto:
+            self.lbl_result = ttk.Label(
+                parent,
+                text=f"{item.ta_no} {item.paikka.lyhytnimi}",
+                font=LARGE_FONT
+                ).grid(columnspan=2, pady=20)
+
+
 if __name__ == "__main__":
-    fields = ["TreVtam", "luokka", "nimi", "huomautus", "paikka"]
+    # read configuration from ini-file
+    str_cfg_file = "test//varasto_cfg.ini"
+    cfg = functions.Config(str_cfg_file)
+    # establish session to db with info from cfg-file
+    session = cfg.session
+    fields = {"hakusana": "TA1206061206"}
     window_root = tk.Tk()
-    frame = Kysely(window_root, "uusi väline", fields)
+    oikea = Oikea(window_root)
+    loyto = functions.etsi_jotain(session, fields)
+    frame = Tulos(oikea, "löytyi:", loyto)
     window_root.mainloop()

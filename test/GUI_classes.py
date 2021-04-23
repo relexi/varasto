@@ -108,11 +108,16 @@ class Tulos(Oikea):
         parent.clear()  # usually parent is of class Oikea
         self.title = title
         self.sisalto = sisalto
-        self.lbl_result = ttk.Label(
-                parent,
-                text=f"{sisalto.ta_no} {sisalto.paikka.lyhytnimi}",
-                font=LARGE_FONT
-                ).grid(columnspan=2, pady=20)
+        print(type(sisalto))
+        # sisalto can be either of type Valine or a list of objects
+        try:
+            self.lbl_result = ttk.Label(
+                    parent,
+                    text=f"{sisalto.ta_no} {sisalto.paikka.lyhytnimi}",
+                    font=LARGE_FONT
+                    ).grid(columnspan=2, pady=20)
+        except:
+            print("result not a valine")
 
 
 class MainApplication(tk.Frame):

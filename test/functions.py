@@ -273,7 +273,7 @@ def etsi_valine(session, ta_no):
         .filter(Valine.ta_no == ta_no)
         .one_or_none()
     )
-    return valine
+    return [valine]  # needs to be a list
 
 
 def etsi_jotain(session, fields):
