@@ -8,8 +8,8 @@ class Oikea(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
         self.parent = parent
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1, minsize=300)
+        self.rowconfigure(0, weight=1, minsize=30)
+        self.columnconfigure(1, weight=1, minsize=200)
         self.grid()
 
     def clear(self):
@@ -32,7 +32,7 @@ class Kysely:
         self.fields = fields
         self.parent = parent
         self.root = tk.Frame(self.parent)
-        self.root.columnconfigure(1, minsize=200)
+        self.root.columnconfigure(1, minsize=300)
         self.root.pack(padx=10, pady=20)
         self.lbl_title = tk.Label(self.root, text=title, font=LARGE_FONT).grid(
             row=0, columnspan=2, sticky="ew"
@@ -67,11 +67,18 @@ class Tulos(Oikea):
         print(type(sisalto))
         print(sisalto)
         for item in sisalto:
-            self.lbl_result = ttk.Label(
+            self.lbl_ta = ttk.Label(
                 parent,
-                text=f"{item.ta_no} {item.paikka.lyhytnimi}",
-                font=LARGE_FONT
-                ).grid(columnspan=2, pady=20)
+                text=f"{item.ta_no}"
+                ).grid(row=sisalto.index(item), column=0)
+            self.lbl_nimi = ttk.Label(
+                parent,
+                text=f"{item.nimi}"
+                ).grid(row=sisalto.index(item), column=1)
+            self.lbl_paikka = ttk.Label(
+                parent,
+                text=f"{item.paikka.lyhytnimi}"
+                ).grid(row=sisalto.index(item), column=2)
 
 
 if __name__ == "__main__":
@@ -80,7 +87,8 @@ if __name__ == "__main__":
     cfg = functions.Config(str_cfg_file)
     # establish session to db with info from cfg-file
     session = cfg.session
-    fields = {"hakusana": "TA1206061206"}
+    print(dir(session))
+    fields = {"hakusana": "TA1812102"}
     window_root = tk.Tk()
     oikea = Oikea(window_root)
     loyto = functions.etsi_jotain(session, fields)

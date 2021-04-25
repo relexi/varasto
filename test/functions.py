@@ -79,9 +79,9 @@ class Config:
     def __init__(self, ini_file):
         self.ini_file = ini_file
 
-        def db_connect(db_file):
+        def db_connect():
             # Connect to the database using SQLAlchemy
-            engine = create_engine(f"sqlite:///{db_file}", echo=False)
+            engine = create_engine(f"sqlite:///{self.db_file}", echo=False)
             Session = sessionmaker()
             Session.configure(bind=engine)
             session = Session()
@@ -139,7 +139,7 @@ class Config:
         cfg.read(ini_file, 'UTF-8')
         # set attributes
         self.db_file = cfg.get('db', 'db_file')
-        self.session = db_connect(self.db_file)
+        self.session = db_connect()
         self.hyllyt = read_hyllyt()
         self.luokat = read_luokat()
         self.tapahtumaluokat = read_tapaht_luokat()
@@ -273,7 +273,7 @@ def etsi_valine(session, ta_no):
         .filter(Valine.ta_no == ta_no)
         .one_or_none()
     )
-    return [valine]  # needs to be a list
+    return valine  # is of type Valine
 
 
 def etsi_jotain(session, fields):
@@ -282,10 +282,10 @@ def etsi_jotain(session, fields):
 
     loyto = (
         session.query(Valine)
-        .filter(Valine.ta_no.ilike(hakusana))
+        .filter(Valine.ta_no.ilike("%"+hakusana+"%"))
         .all()
     )
-    return loyto
+    return loyto  # returns a list of Valine
 
 
 def etsi_paikka(session, paikka_lyhyt):
@@ -297,11 +297,12 @@ def etsi_paikka(session, paikka_lyhyt):
     return paikka
 
 
+# read configuration from ini-file
+cfg = Config(str_cfg_file)
+# establish session to db with info from cfg-file
+session = cfg.session
+
 if __name__ == "__main__":
-    # read configuration from ini-file
-    cfg = Config(str_cfg_file)
-    # establish session to db with info from cfg-file
-    session = cfg.session
     v = uusi_valine(session, "TA181210222", "181210", "Modux480 vanha")
     v = uusi_valine(session, "TA181210210", "181210", "Modux480 vanha")
     v = uusi_valine(session, "TA181210555", "181210", "Modux480 uusi")

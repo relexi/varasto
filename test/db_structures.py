@@ -11,6 +11,15 @@ class Meta(Base):
     __tablename__ = "meta"
     version = Column(Integer, primary_key=True, autoincrement=True)
     version_info = Column(String)
+    version_date = Column(DateTime)
+
+
+class Hyllyt(Base):
+    __tablename__ = "hyllyt"
+    hylly = Column(String, primary_key=True)
+    tasot = Column(String)
+    valit = Column(String)
+    lavat = Column(String)
 
 
 class Valine(Base):

@@ -19,7 +19,7 @@ class Oikea(tk.Frame):
         tk.Frame.__init__(self, *args, **kwargs)
         self.parent = parent
         self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1, minsize=300)
+        self.columnconfigure(0, weight=1)
         self.grid()
 
     def clear(self):
@@ -109,15 +109,20 @@ class Tulos(Oikea):
         self.title = title
         self.sisalto = sisalto
         print(type(sisalto))
-        # sisalto can be either of type Valine or a list of objects
-        try:
-            self.lbl_result = ttk.Label(
-                    parent,
-                    text=f"{sisalto.ta_no} {sisalto.paikka.lyhytnimi}",
-                    font=LARGE_FONT
-                    ).grid(columnspan=2, pady=20)
-        except:
-            print("result not a valine")
+        print(sisalto)
+        for item in sisalto:
+            self.lbl_ta = ttk.Label(
+                parent,
+                text=f"{item.ta_no}"
+                ).grid(row=sisalto.index(item), column=0)
+            self.lbl_nimi = ttk.Label(
+                parent,
+                text=f"{item.nimi}"
+                ).grid(row=sisalto.index(item), column=1)
+            self.lbl_paikka = ttk.Label(
+                parent,
+                text=f"{item.paikka.lyhytnimi}"
+                ).grid(row=sisalto.index(item), column=2)
 
 
 class MainApplication(tk.Frame):
