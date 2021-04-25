@@ -25,7 +25,7 @@ class Hyllyt(Base):
 class Valine(Base):
     __tablename__ = "valine"
     ta_no = Column(String, primary_key=True)
-    luokka_id = Column(Integer, ForeignKey("luokka.luokka_id"))
+    luokka_id = Column(String, ForeignKey("luokka.luokka_id"))
     nimi = Column(String)
     huomautus = Column(String)
     paikka_id = Column(Integer, ForeignKey("paikka.paikka_id"))

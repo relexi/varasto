@@ -90,23 +90,24 @@ class Config:
             return session
 
         def read_hyllyt():
-            # build the hyllyt-dictionary
+            # build the hyllyt-dictionary from the ini-file
+            # hyllyt = {"hylly": [tasot, valit, [lavat, lavat, ..]]
             # hyllyt = {
-            #           "A": [3, 5, [3, 3, 4]],
+            #           "A": [5, 3, [3, 3, 4]],
             #           "B": [3, 3, [3, 3, 3]],
             #           "C": [3, 3, [3, 3, 3]],
             #           "D": [3, 3, [3, 3, 3]],
-            #           "E": [2, 4, [4, 4]]
+            #           "E": [4, 2, [4, 4]]
             # }
             hyllyt = {}
             for (hylly, str_rivi) in cfg.items("varasto"):
                 rivi = str_rivi.split(", ")
                 int_rivi = [int(item) for item in rivi]
-                valit = int_rivi[0]
-                tasot = int_rivi[1]
+                tasot = int_rivi[0]
+                valit = int_rivi[1]
                 hylly = hylly.upper()
                 lst_lavat = int_rivi[2:valit+2]
-                lst_rivi = [valit, tasot, lst_lavat]
+                lst_rivi = [tasot, valit, lst_lavat]
                 hyllyt[hylly] = lst_rivi
             return hyllyt
 

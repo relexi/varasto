@@ -26,22 +26,22 @@ def luo_db_file(str_db_file, version_info):
     import sqlite3
     from sqlite3 import Error
     # the SQL-queries that create the db-structure
-    create_string = ["""CREATE TABLE `valine` (
-    `ta_no` varchar(255) PRIMARY KEY,
-    `va_luokka_id` int,
-    `valine_nimi` varchar(255),
+    create_string = ["""    CREATE TABLE `valine` (
+    `ta_no` varchar(255) NOT NULL PRIMARY KEY,
+    `luokka_id` varchar(255) REFERENCES luokka,
+    `nimi` varchar(255),
     `huomautus` varchar(255),
-    `va_paikka_id` int,
+    `paikka_id` INTEGER REFERENCES paikka,
     `active` tinyint
     );
     """, """
     CREATE TABLE `luokka` (
-    `luokka_id` INTEGER PRIMARY KEY,
+    `luokka_id` varchar(255) NOT NULL PRIMARY KEY,
     `luokka_nimi` varchar(255)
     );
     """, """
     CREATE TABLE `paikka` (
-    `paikka_id` int PRIMARY KEY,
+    `paikka_id` INTEGER NOT NULL PRIMARY KEY,
     `lyhytnimi` varchar(255),
     `hylly` varchar(255),
     `taso` tinyint,
@@ -51,26 +51,27 @@ def luo_db_file(str_db_file, version_info):
     );
     """, """
     CREATE TABLE `tapahtuma` (
-    `tapaht_id` int PRIMARY KEY,
-    `ta_ta_no` varchar(255),
-    `ta_luokka` int,
-    `ta_paikka_id` int,
+    `tapaht_id` INTEGER NOT NULL PRIMARY KEY,
+    `ta_no` varchar(255) REFERENCES valine,
+    `tapaht_luokka` INTEGER REFERENCES tapahtuma_luokka,
+    `paikka_id` INTEGER REFERENCES paikka,
+    `tapaht_kuvaus` varchar(255),
     `tapahtunut` datetime DEFAULT (now())
     );
     """, """
     CREATE TABLE `tapahtuma_luokka` (
-    `tapaht_luokka_id` int PRIMARY KEY,
+    `tapaht_luokka_id` INTEGER NOT NULL PRIMARY KEY,
     `tapaht_kuvaus` varchar(255)
     );
     """, """
     CREATE TABLE `meta` (
-    `version` int PRIMARY KEY,
+    `version` INTEGER NOT NULL PRIMARY KEY,
     `version_info` varchar(255),
     `version_date` datetime DEFAULT (now())
     );
     """, """
     CREATE TABLE `hyllyt` (
-    `hylly` varchar(255) PRIMARY KEY,
+    `hylly` varchar(255) NOT NULL PRIMARY KEY,
     `tasot` varchar(255),
     `valit` varchar(255),
     `lavat` varchar(255)
@@ -102,8 +103,8 @@ def luo_db_file(str_db_file, version_info):
 def luo_db_paikat(session, hyllyt):
     # iterate through the places and call add_paikka
     for hylly, elem in hyllyt.items():
-        valit = hyllyt[hylly][0]
-        tasot = hyllyt[hylly][1]
+        tasot = hyllyt[hylly][0]
+        valit = hyllyt[hylly][1]
         lavat = hyllyt[hylly][2]
 
         for vali in range(valit):
@@ -126,8 +127,8 @@ def luo_db_paikat(session, hyllyt):
 def luo_db_hyllyt(session, hyllyt):
     # iterate through the places and call add_paikka
     for hylly, elem in hyllyt.items():
-        valit = hyllyt[hylly][0]
-        tasot = hyllyt[hylly][1]
+        tasot = hyllyt[hylly][0]
+        valit = hyllyt[hylly][1]
         lavat = hyllyt[hylly][2]
 
         hylly = Hyllyt(hylly=hylly,

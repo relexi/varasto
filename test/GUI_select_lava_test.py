@@ -86,8 +86,8 @@ def uusi_valine_gui(callback):
 
 
 def nayta_hylly(hylly):
-    valit = hyllyt[hylly][0]
-    tasot = hyllyt[hylly][1]
+    tasot = hyllyt[hylly][0]
+    valit = hyllyt[hylly][1]
     lavat = hyllyt[hylly][2]
 
     # erase old content first
