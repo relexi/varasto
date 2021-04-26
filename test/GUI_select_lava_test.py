@@ -105,7 +105,7 @@ def nayta_hylly(hylly):
         for t in range(tasot):
             taso = tasot-t-1
             for lava in range(lavat[vali]):
-                txt_pos = hylly+str(vali)+str(taso)+str(lava)
+                txt_pos = hylly+str(taso)+str(vali)+str(lava)
                 frame = tk.Frame(
                     master=framek,
                     relief=tk.RAISED,
@@ -125,10 +125,10 @@ def nayta_hylly(hylly):
                 label = tk.Label(master=frame, text=txt_pos)
                 label.pack()
                 label.bind("<Button-1>", lambda e,
-                           pos=hylly+str(vali)+str(taso)+str(lava):
+                           pos=hylly+str(taso)+str(vali)+str(lava):
                            select_lava(pos))
                 label.bind("<Enter>", lambda e,
-                           pos=hylly+str(vali)+str(taso)+str(lava):
+                           pos=hylly+str(taso)+str(vali)+str(lava):
                            displ_lava(pos))
                 label.bind("<Leave>", lambda e: displ_nix(frm_info))
 

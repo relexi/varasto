@@ -26,7 +26,8 @@ def luo_db_file(str_db_file, version_info):
     import sqlite3
     from sqlite3 import Error
     # the SQL-queries that create the db-structure
-    create_string = ["""    CREATE TABLE `valine` (
+    create_string = ["""
+    CREATE TABLE `valine` (
     `ta_no` varchar(255) NOT NULL PRIMARY KEY,
     `luokka_id` varchar(255) REFERENCES luokka,
     `nimi` varchar(255),
@@ -111,7 +112,7 @@ def luo_db_paikat(session, hyllyt):
             for t in range(tasot):
                 taso = tasot-t-1
                 for lava in range(lavat[vali]):
-                    lyhytnimi = hylly + str(vali) + str(taso) + str(lava)
+                    lyhytnimi = hylly + str(taso) + str(vali) + str(lava)
                     onko = session.query(Paikka.lyhytnimi)\
                         .filter(Paikka.lyhytnimi == lyhytnimi).all()
                     if onko != []:

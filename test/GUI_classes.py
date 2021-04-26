@@ -108,21 +108,33 @@ class Tulos(Oikea):
         parent.clear()  # usually parent is of class Oikea
         self.title = title
         self.sisalto = sisalto
-        print(type(sisalto))
-        print(sisalto)
-        for item in sisalto:
+        try:  # is there a list of objects?
+            for item in sisalto:
+                self.lbl_ta = ttk.Label(
+                    parent,
+                    text=f"{item.ta_no}"
+                    ).grid(row=sisalto.index(item), column=0)
+                self.lbl_nimi = ttk.Label(
+                    parent,
+                    text=f"{item.nimi}"
+                    ).grid(row=sisalto.index(item), column=1)
+                self.lbl_paikka = ttk.Label(
+                    parent,
+                    text=f"{item.paikka.lyhytnimi}"
+                    ).grid(row=sisalto.index(item), column=2)
+        except TypeError:  # only one object of type valine given
             self.lbl_ta = ttk.Label(
                 parent,
-                text=f"{item.ta_no}"
-                ).grid(row=sisalto.index(item), column=0)
+                text=f"{sisalto.ta_no}"
+                ).grid(row=0, column=0)
             self.lbl_nimi = ttk.Label(
                 parent,
-                text=f"{item.nimi}"
-                ).grid(row=sisalto.index(item), column=1)
+                text=f"{sisalto.nimi}"
+                ).grid(row=0, column=1)
             self.lbl_paikka = ttk.Label(
                 parent,
-                text=f"{item.paikka.lyhytnimi}"
-                ).grid(row=sisalto.index(item), column=2)
+                text=f"{sisalto.paikka.lyhytnimi}"
+                ).grid(row=0, column=2)
 
 
 class MainApplication(tk.Frame):
