@@ -97,17 +97,22 @@ class Hyllynaytto(Oikea):
                 .one_or_none())
             if hylly:
                 hy = hylly.hylly
-                tasot = hylly.tasot
-                valit = hylly.valit
-                lavat = hylly.lavat
+                tasot = int(hylly.tasot)
+                valit = int(hylly.valit)
+                lavat = hylly.lavat.split()
+                lavat = [int(lava) for lava in lavat]
                 self.hyllyt[hy] = [tasot, valit, lavat]
 
-        tasot = int(self.hyllyt[self.active_hylly][0])
-        valit = int(self.hyllyt[self.active_hylly][1])
-        lavat = self.hyllyt[self.active_hylly][2].split()
-        int_lavat = [int(item) for item in lavat]
+        # tasot = int(self.hyllyt[self.active_hylly][0])
+        # valit = int(self.hyllyt[self.active_hylly][1])
+        # lavat = self.hyllyt[self.active_hylly][2].split()
+        # int_lavat = [int(item) for item in lavat]
 
         hylly = self.active_hylly
+        tasot = self.hyllyt[self.active_hylly][0]
+        valit = self.hyllyt[self.active_hylly][1]
+        lavat = self.hyllyt[self.active_hylly][2]
+
         for vali in range(valit):
             framek = tk.Frame(
                 master=parent,
@@ -119,7 +124,7 @@ class Hyllynaytto(Oikea):
 
             for t in range(tasot):
                 taso = tasot-t-1
-                for lava in range(int_lavat[vali]):
+                for lava in range(lavat[vali]):
                     txt_pos = hylly+str(taso)+str(vali)+str(lava)
                     frame = tk.Frame(
                         master=framek,
