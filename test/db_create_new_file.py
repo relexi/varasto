@@ -128,14 +128,16 @@ def luo_db_paikat(session, hyllyt):
 def luo_db_hyllyt(session, hyllyt):
     # iterate through the places and call add_paikka
     for hylly, elem in hyllyt.items():
-        tasot = hyllyt[hylly][0]
-        valit = hyllyt[hylly][1]
-        lavat = hyllyt[hylly][2]
-
+        str_tasot = str(hyllyt[hylly][0])
+        str_valit = str(hyllyt[hylly][1])
+        str_lavat = ""
+        for lava in hyllyt[hylly][2]:
+            str_lavat += str(lava)+" "
+        str_lavat = str_lavat[:-1]
         hylly = Hyllyt(hylly=hylly,
-                       valit=str(valit),
-                       tasot=str(tasot),
-                       lavat=str(lavat))
+                       valit=str_valit,
+                       tasot=str_tasot,
+                       lavat=str_lavat)
         session.add(hylly)
     session.commit()
 

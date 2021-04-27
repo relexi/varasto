@@ -104,11 +104,9 @@ class Hyllynaytto(Oikea):
 
         tasot = int(self.hyllyt[self.active_hylly][0])
         valit = int(self.hyllyt[self.active_hylly][1])
-        lavat = self.hyllyt[self.active_hylly][2]
+        lavat = self.hyllyt[self.active_hylly][2].split()
+        int_lavat = [int(item) for item in lavat]
 
-        print(type(tasot))
-        print(type(valit))
-        print(type(lavat))
         hylly = self.active_hylly
         for vali in range(valit):
             framek = tk.Frame(
@@ -121,7 +119,7 @@ class Hyllynaytto(Oikea):
 
             for t in range(tasot):
                 taso = tasot-t-1
-                for lava in range(lavat[vali]):
+                for lava in range(int_lavat[vali]):
                     txt_pos = hylly+str(taso)+str(vali)+str(lava)
                     frame = tk.Frame(
                         master=framek,
