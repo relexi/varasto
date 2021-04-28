@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from db_structures import Paikka, Valine, Luokka, Tapahtuma, Tapahtuma_Luokka
+from db_structures import Luokka, Tapahtuma, Tapahtuma_Luokka, Hyllyt
+from db_structures import Paikka, Valine
 from datetime import datetime
 import configparser
 import tkinter as tk
@@ -111,6 +112,25 @@ class Config:
                 hyllyt[hylly] = lst_rivi
             return hyllyt
 
+        def read_db_hyllyt():
+            # reads the database and builds the hyllyt-dictionary
+            # with info from the db-table "hyllyt"
+            session = db_connect()
+            hyllyt = {}
+            for int_h in range(65, 90):
+                hylly = (
+                    session.query(Hyllyt)
+                    .filter(Hyllyt.hylly == chr(int_h))
+                    .one_or_none())
+                if hylly:
+                    hy = hylly.hylly
+                    tasot = int(hylly.tasot)
+                    valit = int(hylly.valit)
+                    lavat = hylly.lavat.split()
+                    lavat = [int(lava) for lava in lavat]
+                    hyllyt[hy] = [tasot, valit, lavat]
+            return hyllyt
+
         def read_luokat():
             # build luokat-dictionary
             # luokat = {
@@ -145,6 +165,7 @@ class Config:
         self.luokat = read_luokat()
         self.tapahtumaluokat = read_tapaht_luokat()
         self.varit = read_varit()
+        self.db_hyllyt = read_db_hyllyt()
 
 
 def nyt_tapahtuu(session, valine, paikka, luokka, kuvaus="ei huom"):

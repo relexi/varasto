@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import functions
-from db_structures import Hyllyt
 
 LARGE_FONT = ("Verdana", 12)
 
@@ -60,7 +59,6 @@ class Menu(Vasen):
 
         def nayta_hylly(hylly):
             hyllynaytto = Hyllynaytto(main.oikea, hylly)
-            print(hyllynaytto)
 
         # create the shelf-display menu on top of all other
         btn_fwd = ttk.Button(self.root, text=">", command=next_hylly)
@@ -73,7 +71,6 @@ class Menu(Vasen):
         btn_fwd.grid(row=0, column=1, sticky="e")
         btn_actv.grid(row=1, column=0, columnspan=2,
                       sticky="ew")
-
         # create "normal" menu entries from dictionary entries
         for key, value in entries.items():
             self.key = ttk.Button(self.root,
@@ -87,26 +84,8 @@ class Hyllynaytto(Oikea):
         parent.clear()
 
         self.parent = parent
-        self.hyllyt = {}
         self.active_hylly = hylly
-        self.hyllyt = {}
-        for int_h in range(65, 90):
-            hylly = (
-                session.query(Hyllyt)
-                .filter(Hyllyt.hylly == chr(int_h))
-                .one_or_none())
-            if hylly:
-                hy = hylly.hylly
-                tasot = int(hylly.tasot)
-                valit = int(hylly.valit)
-                lavat = hylly.lavat.split()
-                lavat = [int(lava) for lava in lavat]
-                self.hyllyt[hy] = [tasot, valit, lavat]
-
-        # tasot = int(self.hyllyt[self.active_hylly][0])
-        # valit = int(self.hyllyt[self.active_hylly][1])
-        # lavat = self.hyllyt[self.active_hylly][2].split()
-        # int_lavat = [int(item) for item in lavat]
+        self.hyllyt = cfg.db_hyllyt  # get actual shelf-config from db
 
         hylly = self.active_hylly
         tasot = self.hyllyt[self.active_hylly][0]
@@ -273,7 +252,7 @@ class MainApplication(tk.Frame):
 
         menu_entries = {"uusi väline": self.uusi_valine,
                         "etsi väline": self.etsi}
-        Menu(self.vasen, menu_entries)
+        self.menu = Menu(self.vasen, menu_entries)
 
 
 if __name__ == "__main__":

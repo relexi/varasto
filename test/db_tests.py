@@ -11,8 +11,9 @@ from the database itself. It then should generate the warehouses properties
 fom information of the database.
 """
 
+
 def db_read_hyllyt(session):
-    
+    pass
 
 
 str_cfg_file = "test//varasto_cfg.ini"
