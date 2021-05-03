@@ -16,6 +16,7 @@ str_db_version_info = "introduced table meta for db with version"\
                     + "and version_info"
 
 hyllyt = cfg.hyllyt
+print(hyllyt)
 luokat = cfg.luokat
 tapahtumaluokat = cfg.tapahtumaluokat
 

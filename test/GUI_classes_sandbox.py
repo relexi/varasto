@@ -85,7 +85,8 @@ class Hyllynaytto(Oikea):
 
         self.parent = parent
         self.active_hylly = hylly
-        self.hyllyt = cfg.db_hyllyt  # get actual shelf-config from db
+        # get actual shelf-config from db
+        self.hyllyt = functions.read_db_hyllyt(session)
 
         hylly = self.active_hylly
         tasot = self.hyllyt[self.active_hylly][0]

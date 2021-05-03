@@ -112,25 +112,6 @@ class Config:
                 hyllyt[hylly] = lst_rivi
             return hyllyt
 
-        def read_db_hyllyt():
-            # reads the database and builds the hyllyt-dictionary
-            # with info from the db-table "hyllyt"
-            session = db_connect()
-            hyllyt = {}
-            for int_h in range(65, 90):
-                hylly = (
-                    session.query(Hyllyt)
-                    .filter(Hyllyt.hylly == chr(int_h))
-                    .one_or_none())
-                if hylly:
-                    hy = hylly.hylly
-                    tasot = int(hylly.tasot)
-                    valit = int(hylly.valit)
-                    lavat = hylly.lavat.split()
-                    lavat = [int(lava) for lava in lavat]
-                    hyllyt[hy] = [tasot, valit, lavat]
-            return hyllyt
-
         def read_luokat():
             # build luokat-dictionary
             # luokat = {
@@ -165,7 +146,6 @@ class Config:
         self.luokat = read_luokat()
         self.tapahtumaluokat = read_tapaht_luokat()
         self.varit = read_varit()
-        self.db_hyllyt = read_db_hyllyt()
 
 
 def nyt_tapahtuu(session, valine, paikka, luokka, kuvaus="ei huom"):
@@ -317,6 +297,25 @@ def etsi_paikka(session, paikka_lyhyt):
         .one_or_none()
     )
     return paikka
+
+
+def read_db_hyllyt(session):
+    # reads the database and builds the hyllyt-dictionary
+    # with info from the db-table "hyllyt"
+    hyllyt = {}
+    for int_h in range(65, 90):
+        hylly = (
+            session.query(Hyllyt)
+            .filter(Hyllyt.hylly == chr(int_h))
+            .one_or_none())
+        if hylly:
+            hy = hylly.hylly
+            tasot = int(hylly.tasot)
+            valit = int(hylly.valit)
+            lavat = hylly.lavat.split()
+            lavat = [int(lava) for lava in lavat]
+            hyllyt[hy] = [tasot, valit, lavat]
+    return hyllyt
 
 
 # read configuration from ini-file
