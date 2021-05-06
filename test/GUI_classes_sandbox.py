@@ -116,7 +116,11 @@ class Hyllynaytto(Oikea):
                     )
                     frame.grid(row=t, column=lava, padx=8, pady=8)
                     list_valineet = functions.valine_paikalla(session, txt_pos)
-                    print(list_valineet)
+                    varit = cfg.varit
+                    for valine in list_valineet:
+                        str_luokka_id = valine.luokka.luokka_id
+                        if str_luokka_id in varit:
+                            frame["highlightbackground"] = varit[str_luokka_id]
 
                     label = tk.Label(master=frame, text=txt_pos)
                     label.pack()

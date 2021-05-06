@@ -246,7 +246,7 @@ def uusi_valine(session, fields):
         valine.huomautus = huom
 
     # write new tapahtuma into db for creation of valine
-    nyt_tapahtuu(session, valine, None, "uusi", "väline luotu")
+    nyt_tapahtuu(session, valine, None, "uusi", f"väline luotu, {huom}")
 
     # assign properties to valine-object and store it to the db
     valine.luokka = luokka
@@ -256,7 +256,7 @@ def uusi_valine(session, fields):
 
     # if paikka is given, then store valine to paikka
     if paikka is not None:
-        varastoi_valine(session, ta_no, paikka, "väline varastoitu")
+        varastoi_valine(session, ta_no, paikka, f"väline varastoitu {huom}")
         print("valine varastoitu paikalle", paikka)
     else:
         print("paikka ei ole tiedossa")
@@ -266,7 +266,7 @@ def uusi_valine(session, fields):
 
 def valine_paikalla(session, paikka_lyhyt):
     paikka = etsi_paikka(session, paikka_lyhyt)
-    return paikka.valineet
+    return paikka.valineet  # returns list of valineet
 
 
 def etsi_valine(session, ta_no):
@@ -287,6 +287,20 @@ def etsi_jotain(session, fields):
         .filter(Valine.ta_no.ilike("%"+hakusana+"%"))
         .all()
     )
+    loyto.extend(
+        session.query(Valine)
+        .filter(Valine.huomautus.ilike("%"+hakusana+"%"))
+        .all()
+    )
+    loyto_tapaht = (
+        session.query(Tapahtuma)
+        .filter(Tapahtuma.tapaht_kuvaus.ilike("%"+hakusana+"%"))
+        .all()
+    )
+    for item in loyto_tapaht:
+        print(item)
+        print(item.ta_no, item.tapaht_kuvaus)
+
     return loyto  # returns a list of Valine
 
 
